@@ -1,0 +1,17 @@
+{
+  "name": "devtools-sidebar-extension",
+  "version": "1.0.0",
+  "description": "DevTools Sidebar - Chrome Extension build tools",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "clean": "node -e \"const fs=require('fs');fs.rmSync('dist',{recursive:true,force:true});console.log('Cleaned dist/')\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "terser": "^5.46.0"
+  }
+}

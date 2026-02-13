@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ALT-DEV TOOLS</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <div class="tab active" data-tab="elements">
+      <span class="tab-icon">◇</span>
+      Elements
+    </div>
+    <div class="tab" data-tab="console">
+      <span class="tab-icon">›_</span>
+      Console
+    </div>
+    <div class="tab" data-tab="sources">
+      <span class="tab-icon">{ }</span>
+      Sources
+    </div>
+    <div class="tab" data-tab="network">
+      <span class="tab-icon">⇅</span>
+      Network
+    </div>
+    <div class="tab" data-tab="application">
+      <span class="tab-icon">▤</span>
+      Application
+    </div>
+  </div>
+
+  <!-- Elements Panel -->
+  <div id="elements-panel" class="panel active">
+    <div class="elements-layout">
+      <div class="elements-dom">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <button id="elements-inspect" class="toolbar-btn" title="Select an element in the page to inspect it (Ctrl+Shift+C)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+              </svg>
+            </button>
+            <button id="elements-refresh" class="toolbar-btn" title="Refresh DOM tree">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+              </svg>
+            </button>
+          </div>
+          <div class="toolbar-center">
+            <input type="text" id="elements-search" class="filter-input" placeholder="Search by tag, class, or id...">
+          </div>
+        </div>
+        <div id="elements-tree" class="elements-tree-content"></div>
+      </div>
+      <div class="elements-styles-pane">
+        <div class="styles-tabs">
+          <button class="styles-tab-btn active" data-styles-tab="styles">Styles</button>
+          <button class="styles-tab-btn" data-styles-tab="event-listeners">Event Listeners</button>
+        </div>
+        <div id="styles-tab-styles" class="styles-tab-content active">
+          <div class="styles-header">Computed Styles</div>
+          <div id="elements-styles" class="elements-styles-content">
+            <div class="sources-placeholder">Select an element to view its styles</div>
+          </div>
+        </div>
+        <div id="styles-tab-event-listeners" class="styles-tab-content">
+          <div id="elements-event-listeners" class="elements-styles-content">
+            <div class="sources-placeholder">Select an element to view event listeners</div>
+          </div>
+        </div>
+        <div class="styles-header">Force State</div>
+        <div id="elements-force-state" class="force-state-container">
+          <label class="force-state-label"><input type="checkbox" data-pseudo=":hover"> :hover</label>
+          <label class="force-state-label"><input type="checkbox" data-pseudo=":active"> :active</label>
+          <label class="force-state-label"><input type="checkbox" data-pseudo=":focus"> :focus</label>
+          <label class="force-state-label"><input type="checkbox" data-pseudo=":visited"> :visited</label>
+          <label class="force-state-label"><input type="checkbox" data-pseudo=":focus-within"> :focus-within</label>
+        </div>
+        <div class="styles-header">Box Model</div>
+        <div id="elements-box-model" class="box-model-container">
+          <div class="sources-placeholder">Select an element to view box model</div>
+        </div>
+        <div class="styles-header">Actions</div>
+        <div class="element-actions">
+          <button id="elem-scroll-into-view" class="action-btn" title="Scroll into view">📍 Scroll</button>
+          <button id="elem-copy-html" class="action-btn" title="Copy outerHTML">📋 HTML</button>
+          <button id="elem-copy-selector" class="action-btn" title="Copy selector">🎯 Selector</button>
+          <button id="elem-delete" class="action-btn action-btn-danger" title="Delete element">🗑️ Delete</button>
+          <button id="elem-add-child" class="action-btn" title="Add child element">➕ Child</button>
+          <button id="elem-add-before" class="action-btn" title="Add before">⬆ Before</button>
+          <button id="elem-add-after" class="action-btn" title="Add after">⬇ After</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Console Panel -->
+  <div id="console-panel" class="panel">
+    <!-- Console Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button id="console-clear" class="toolbar-btn" title="Clear console">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </button>
+      </div>
+      <div class="toolbar-center">
+        <input type="text" id="console-filter" class="filter-input" placeholder="Filter">
+      </div>
+      <div class="toolbar-right">
+        <div class="level-filters">
+          <label class="level-filter"><input type="checkbox" data-level="verbose" checked><span class="level-badge verbose">Verbose</span></label>
+          <label class="level-filter"><input type="checkbox" data-level="info" checked><span class="level-badge info">Info</span></label>
+          <label class="level-filter"><input type="checkbox" data-level="warn" checked><span class="level-badge warn">Warnings</span></label>
+          <label class="level-filter"><input type="checkbox" data-level="error" checked><span class="level-badge error">Errors</span></label>
+        </div>
+      </div>
+    </div>
+    <!-- Console Output -->
+    <div id="console-output" class="console-output"></div>
+    <!-- Console Input -->
+    <div class="console-input-area">
+      <span class="prompt">&gt;</span>
+      <input type="text" id="console-input" class="console-input" placeholder="Expression to evaluate..." spellcheck="false">
+    </div>
+  </div>
+
+  <!-- Network Panel -->
+  <div id="network-panel" class="panel">
+    <!-- Network Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button id="network-clear" class="toolbar-btn" title="Clear network log">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </button>
+        <label class="toolbar-checkbox">
+          <input type="checkbox" id="network-preserve">
+          Preserve log
+        </label>
+        <button id="network-export" class="toolbar-btn" title="Export as HAR">⬇</button>
+        <button id="network-block-toggle" class="toolbar-btn" title="Request blocking">🚫</button>
+      </div>
+      <div class="toolbar-center">
+        <input type="text" id="network-filter" class="filter-input" placeholder="Filter">
+        <input type="text" id="network-search" class="filter-input" placeholder="Search body..." style="margin-left:4px;">
+      </div>
+      <div class="toolbar-right">
+        <div class="type-filters">
+          <button class="type-filter-btn active" data-type="all">All</button>
+          <button class="type-filter-btn" data-type="fetch">Fetch/XHR</button>
+          <button class="type-filter-btn" data-type="document">Doc</button>
+          <button class="type-filter-btn" data-type="stylesheet">CSS</button>
+          <button class="type-filter-btn" data-type="script">JS</button>
+          <button class="type-filter-btn" data-type="image">Img</button>
+          <button class="type-filter-btn" data-type="font">Font</button>
+          <button class="type-filter-btn" data-type="websocket">WS</button>
+          <button class="type-filter-btn" data-type="other">Other</button>
+        </div>
+      </div>
+    </div>
+    <!-- Network Summary -->
+    <div class="network-summary" id="network-summary">
+      <span id="network-request-count">0 requests</span>
+      <span class="summary-sep">|</span>
+      <span id="network-transferred">0 B transferred</span>
+      <span class="summary-sep">|</span>
+      <span id="network-finish-time">Finish: 0 ms</span>
+    </div>
+    <!-- Network Table -->
+    <div class="network-table-wrap">
+      <table class="network-table" id="network-table">
+        <thead>
+          <tr>
+            <th class="col-name sortable" data-sort="name">Name</th>
+            <th class="col-status sortable" data-sort="status">Status</th>
+            <th class="col-type sortable" data-sort="type">Type</th>
+            <th class="col-initiator sortable" data-sort="initiator">Initiator</th>
+            <th class="col-size sortable" data-sort="size">Size</th>
+            <th class="col-time sortable" data-sort="time">Time</th>
+            <th class="col-waterfall">Waterfall</th>
+          </tr>
+        </thead>
+        <tbody id="network-table-body"></tbody>
+      </table>
+    </div>
+    <!-- Network Detail Panel -->
+    <div id="network-detail" class="network-detail hidden">
+      <div class="detail-header">
+        <button id="network-detail-close" class="toolbar-btn">&times;</button>
+        <div class="detail-tabs">
+          <button class="detail-tab active" data-detail="headers">Headers</button>
+          <button class="detail-tab" data-detail="payload">Payload</button>
+          <button class="detail-tab" data-detail="preview">Preview</button>
+          <button class="detail-tab" data-detail="response">Response</button>
+          <button class="detail-tab" data-detail="timing">Timing</button>
+        </div>
+        <button id="network-copy-curl" class="toolbar-btn" title="Copy as cURL" style="margin-left:auto;font-size:10px;padding:2px 6px;">cURL</button>
+        <button id="network-copy-url" class="toolbar-btn" title="Copy URL" style="font-size:10px;padding:2px 6px;">URL</button>
+      </div>
+      <div class="detail-content" id="network-detail-content"></div>
+    </div>
+    <!-- Request Blocking Panel -->
+    <div id="network-blocking-panel" class="network-blocking-panel hidden">
+      <div class="blocking-header">
+        <span>Request Blocking</span>
+        <button id="network-blocking-close" class="toolbar-btn">&times;</button>
+      </div>
+      <div class="blocking-content">
+        <div class="blocking-input-row">
+          <input type="text" id="blocking-pattern-input" class="filter-input" placeholder="URL pattern (e.g. *.js, api.example.com/*)">
+          <button id="blocking-add-btn" class="action-btn">Add</button>
+        </div>
+        <div id="blocking-patterns-list" class="blocking-patterns-list"></div>
+      </div>
+    </div>
+    <!-- WebSocket Frames Panel -->
+    <div id="network-ws-panel" class="network-ws-panel hidden">
+      <div class="ws-header">
+        <span>WebSocket Frames</span>
+        <button id="network-ws-close" class="toolbar-btn">&times;</button>
+      </div>
+      <div id="ws-frames-list" class="ws-frames-list"></div>
+    </div>
+  </div>
+
+  <!-- Sources Panel -->
+  <div id="sources-panel" class="panel">
+    <div class="sources-layout">
+      <div class="sources-sidebar">
+        <div class="sources-sidebar-header">Page</div>
+        <div id="sources-tree" class="sources-tree"></div>
+      </div>
+      <div class="sources-editor">
+        <div class="sources-editor-header">
+          <span id="sources-filename" class="sources-filename">No file selected</span>
+          <div class="sources-toolbar-right">
+            <button id="sources-pretty-print" class="toolbar-btn" title="Pretty print">{ }</button>
+            <button id="sources-search-toggle" class="toolbar-btn" title="Search across files (Ctrl+Shift+F)">🔍</button>
+          </div>
+        </div>
+        <div id="sources-search-bar" class="sources-search-bar hidden">
+          <input type="text" id="sources-search-input" class="filter-input" placeholder="Search across all sources...">
+          <span id="sources-search-count" class="search-count"></span>
+        </div>
+        <div id="sources-code" class="sources-code">
+          <div class="sources-placeholder">Select a file from the left panel to view its source</div>
+        </div>
+        <div id="sources-search-results" class="sources-search-results hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Panel -->
+  <div id="application-panel" class="panel">
+    <div class="app-layout">
+      <div class="app-sidebar">
+        <div class="app-sidebar-header">Storage</div>
+        <div class="app-nav">
+          <div class="app-nav-item active" data-app-section="cookies">🍪 Cookies</div>
+          <div class="app-nav-item" data-app-section="localStorage">📦 Local Storage</div>
+          <div class="app-nav-item" data-app-section="sessionStorage">📋 Session Storage</div>
+        </div>
+      </div>
+      <div class="app-content">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <button id="app-refresh" class="toolbar-btn" title="Refresh storage data">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+              </svg>
+            </button>
+            <button id="app-clear-storage" class="toolbar-btn" title="Clear storage">🗑️</button>
+          </div>
+          <div class="toolbar-center">
+            <input type="text" id="app-filter" class="filter-input" placeholder="Filter by key...">
+          </div>
+        </div>
+        <div id="app-data-container" class="app-data-container">
+          <div class="sources-placeholder">Select a storage type from the left</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="panel.js"></script>
+</body>
+</html>
