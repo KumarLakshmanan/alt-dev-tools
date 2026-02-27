@@ -97,7 +97,6 @@
 
   <!-- Console Panel -->
   <div id="console-panel" class="panel">
-    <!-- Console Toolbar -->
     <div class="toolbar">
       <div class="toolbar-left">
         <button id="console-clear" class="toolbar-btn" title="Clear console">
@@ -118,9 +117,7 @@
         </div>
       </div>
     </div>
-    <!-- Console Output -->
     <div id="console-output" class="console-output"></div>
-    <!-- Console Input -->
     <div class="console-input-area">
       <span class="prompt">&gt;</span>
       <input type="text" id="console-input" class="console-input" placeholder="Expression to evaluate..." spellcheck="false">
@@ -129,7 +126,6 @@
 
   <!-- Network Panel -->
   <div id="network-panel" class="panel">
-    <!-- Network Toolbar -->
     <div class="toolbar">
       <div class="toolbar-left">
         <button id="network-clear" class="toolbar-btn" title="Clear network log">
@@ -162,7 +158,6 @@
         </div>
       </div>
     </div>
-    <!-- Network Summary -->
     <div class="network-summary" id="network-summary">
       <span id="network-request-count">0 requests</span>
       <span class="summary-sep">|</span>
@@ -170,7 +165,6 @@
       <span class="summary-sep">|</span>
       <span id="network-finish-time">Finish: 0 ms</span>
     </div>
-    <!-- Network Table -->
     <div class="network-table-wrap">
       <table class="network-table" id="network-table">
         <thead>
@@ -187,7 +181,6 @@
         <tbody id="network-table-body"></tbody>
       </table>
     </div>
-    <!-- Network Detail Panel -->
     <div id="network-detail" class="network-detail hidden">
       <div class="detail-header">
         <button id="network-detail-close" class="toolbar-btn">&times;</button>
@@ -203,7 +196,6 @@
       </div>
       <div class="detail-content" id="network-detail-content"></div>
     </div>
-    <!-- Request Blocking Panel -->
     <div id="network-blocking-panel" class="network-blocking-panel hidden">
       <div class="blocking-header">
         <span>Request Blocking</span>
@@ -217,7 +209,6 @@
         <div id="blocking-patterns-list" class="blocking-patterns-list"></div>
       </div>
     </div>
-    <!-- WebSocket Frames Panel -->
     <div id="network-ws-panel" class="network-ws-panel hidden">
       <div class="ws-header">
         <span>WebSocket Frames</span>
@@ -286,6 +277,6 @@
     </div>
   </div>
 
-  <script src="panel.js"></script>
+  <script type="module" src="./panel.ts"></script>
 </body>
 </html>
