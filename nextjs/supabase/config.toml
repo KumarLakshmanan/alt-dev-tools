@@ -1,0 +1,4 @@
+# Supabase project config (for supabase CLI)
+# Run: supabase init, then supabase db push
+
+project_id = "your-supabase-project-id"

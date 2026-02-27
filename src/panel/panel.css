@@ -55,6 +55,15 @@ body {
   user-select: text;
 }
 
+/* Root Preact mount — must fill body and act as flex column */
+#app {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: var(--scrollbar-bg); }
@@ -98,6 +107,9 @@ body {
 .tab-icon {
   font-size: 10px;
   opacity: 0.7;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 /* ============ PANELS ============ */
@@ -1151,6 +1163,103 @@ body {
 }
 
 /* =============================================
+   CHROME-LIKE STYLES PANE
+   ============================================= */
+.styles-element-label {
+  padding: 4px 8px 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.styles-el-id {
+  color: var(--accent);
+  margin-left: 1px;
+}
+
+.styles-el-class {
+  color: #a5d6a7;
+  margin-left: 1px;
+}
+
+.styles-rule-block {
+  border-bottom: 1px solid var(--border);
+  padding: 4px 0;
+}
+
+.styles-rule-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 2px 8px;
+}
+
+.styles-selector {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.styles-source {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: right;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.styles-source:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+.styles-rule-body {
+  padding: 0 8px 2px 20px;
+}
+
+.styles-empty-rule {
+  padding: 0 8px 2px 4px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.styles-computed-section {
+  border-top: 1px solid var(--border);
+}
+
+.styles-computed-toggle {
+  padding: 4px 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+
+.styles-computed-toggle::marker { display: none; }
+
+.styles-computed-toggle::before {
+  content: '▶ ';
+  font-size: 9px;
+}
+
+.styles-computed-section[open] .styles-computed-toggle::before {
+  content: '▼ ';
+}
+
+.styles-computed-section[open] .computed-prop {
+  padding-left: 20px;
+}
+
+.computed-value {
+  color: var(--text-secondary);
+}
+
+/* =============================================
    EVENT LISTENERS PANE
    ============================================= */
 .event-listener-item {
@@ -1186,7 +1295,7 @@ body {
    FORCE ELEMENT STATE
    ============================================= */
 .force-state-container {
-  display: none;
+  display: flex;
   padding: 4px 8px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
@@ -1235,6 +1344,9 @@ body {
   cursor: pointer;
   font-size: 10px;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .action-btn:hover {
@@ -1644,6 +1756,9 @@ mark {
   color: var(--text-secondary);
   cursor: pointer;
   border-left: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .app-nav-item:hover {
@@ -1743,4 +1858,286 @@ mark {
 
 .app-table tr:hover .delete-cookie-btn {
   opacity: 1;
+}
+
+/* 
+   Performance Panel
+ */
+.perf-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  padding: 10px;
+}
+.perf-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.perf-card-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.perf-card-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+.perf-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 12px 4px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+#perf-resources {
+  flex: 1;
+  overflow: auto;
+  padding: 0 8px 8px;
+}
+.perf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.perf-table th {
+  text-align: left;
+  padding: 4px 8px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+}
+.perf-table td {
+  padding: 3px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.perf-table .cell-name {
+  color: var(--accent);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.perf-table .cell-type {
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+.perf-table .cell-time {
+  font-family: var(--font-mono);
+  text-align: right;
+}
+.perf-table .cell-size {
+  font-family: var(--font-mono);
+  text-align: right;
+  color: var(--text-secondary);
+}
+.waterfall-bar {
+  height: 6px;
+  border-radius: 3px;
+  min-width: 2px;
+}
+.perf-fps-section {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+}
+.perf-fps-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.perf-fps-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  min-width: 60px;
+}
+.perf-fps-meter {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.perf-fps-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4af, #4f4);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+.toolbar-btn.recording {
+  color: #f44;
+}
+.toolbar-btn.recording circle,
+.toolbar-btn.recording rect {
+  fill: #f44;
+}
+
+/* 
+   Device Panel — Chrome-style device mode toolbar
+ */
+
+/* Chrome-like device toolbar — single compact row */
+.device-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-toolbar);
+  border-bottom: 1px solid var(--border-color);
+  padding: 4px 8px;
+  min-height: 32px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* Preset dropdown — "Dimensions: iPhone 14" style */
+.device-preset-select {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 3px 6px;
+  cursor: pointer;
+  max-width: 180px;
+  flex-shrink: 0;
+}
+.device-preset-select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+.device-preset-select optgroup {
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+/* Width × height inputs row */
+.device-dim-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.device-dim-input {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 2px 4px;
+  width: 56px;
+  text-align: center;
+}
+.device-dim-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+/* Hide number input spinners */
+.device-dim-input::-webkit-inner-spin-button,
+.device-dim-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+.device-dim-sep {
+  font-size: 11px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+/* Apply / Reset buttons */
+.device-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.device-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.device-btn-apply {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: #000;
+  font-weight: 600;
+}
+.device-btn-apply:hover {
+  opacity: 0.85;
+}
+.device-btn-apply.active {
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+}
+.device-btn-reset {
+  color: var(--text-secondary);
+}
+
+/* Status bar below toolbar */
+.device-status-bar {
+  font-size: 11px;
+  color: var(--text-secondary);
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  min-height: 24px;
+  flex-shrink: 0;
+}
+
+/* Info note */
+.device-note {
+  background: color-mix(in srgb, #75beff 8%, transparent);
+  border: 1px solid color-mix(in srgb, #75beff 25%, transparent);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.6;
+  margin: 10px 12px;
+  padding: 8px 12px;
+}
+.device-note strong { color: var(--text-primary); }
+.device-note code {
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  padding: 0 3px;
+  font-family: inherit;
+}
+
+/* FPS bar row container (id=perf-fps-bar) */
+.perf-fps-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 10px;
+}
+
+.toolbar-btn-accent {
+  background: var(--accent-blue);
+  color: #000;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 3px 10px;
+  border: none;
+}
+.toolbar-btn-accent:hover {
+  opacity: 0.85;
 }

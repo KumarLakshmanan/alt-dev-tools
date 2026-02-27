@@ -21,6 +21,24 @@ import {
 } from './element-helpers';
 
 // =============================================
+// CONTEXT GUARD
+// =============================================
+
+/** Returns true if the extension context is still valid */
+function isContextValid(): boolean {
+  try { return !!chrome.runtime.id; } catch { return false; }
+}
+
+// Stop DOM observer and unregister listeners if the context becomes invalid.
+// This prevents "Extension context invalidated" uncaught errors on hot-reload.
+const contextCheckInterval = setInterval(() => {
+  if (!isContextValid()) {
+    clearInterval(contextCheckInterval);
+    stopDomObserver();
+  }
+}, 2000);
+
+// =============================================
 // MESSAGE BRIDGE: page (MAIN world) → content → background
 // =============================================
 
@@ -51,9 +69,11 @@ window.addEventListener('message', (event: MessageEvent) => {
 
 chrome.runtime.onMessage.addListener(
   (message: { type: string; [key: string]: unknown }, _sender, sendResponse) => {
-    switch (message.type) {
-      case 'eval-in-page': {
-        const id = `eval_${Date.now()}_${Math.random()}`;
+    if (!isContextValid()) return false;
+    try {
+      switch (message.type) {
+        case 'eval-in-page': {
+          const id = `eval_${Date.now()}_${Math.random()}`;
         pendingEvalCallbacks[id] = (response) => sendResponse(response);
         window.postMessage(
           { __devtools_eval_request__: true, expression: message.expression, id },
@@ -125,9 +145,39 @@ chrome.runtime.onMessage.addListener(
         stopInspectMode();
         return false;
 
-      case 'get-event-listeners':
-        sendResponse(getEventListeners(message.selector as string));
-        return true;
+      case 'get-event-listeners': {
+        const sel = message.selector as string;
+        // 1. Synchronous attribute / property listeners (onX= attributes)
+        const attrListeners = getEventListeners(sel);
+
+        // 2. Query MAIN world for addEventListener-tracked listeners via eval bridge
+        const evalId = `eval_${Date.now()}_${Math.random()}`;
+        pendingEvalCallbacks[evalId] = (response: unknown) => {
+          let mainListeners: object[] = [];
+          const resp = response as { result?: { value?: string }; isError?: boolean };
+          if (!resp.isError && resp.result?.value) {
+            try { mainListeners = JSON.parse(resp.result.value) || []; } catch { /* ignore */ }
+          }
+          // Merge: MAIN world listeners first (more informative), then attribute ones
+          sendResponse([...mainListeners, ...attrListeners]);
+        };
+        window.postMessage(
+          {
+            __devtools_eval_request__: true,
+            expression: `JSON.stringify(typeof window.__devtools_getEventListeners__ === 'function' ? window.__devtools_getEventListeners__(${JSON.stringify(sel)}) : [])`,
+            id: evalId,
+          },
+          '*'
+        );
+        // Safety timeout — fall back to attr listeners only
+        setTimeout(() => {
+          if (pendingEvalCallbacks[evalId]) {
+            pendingEvalCallbacks[evalId]({ result: { value: '[]' }, isError: false });
+            delete pendingEvalCallbacks[evalId];
+          }
+        }, 3000);
+        return true; // async
+      }
 
       case 'force-element-state':
         sendResponse(
@@ -178,8 +228,10 @@ chrome.runtime.onMessage.addListener(
       case 'stop-dom-observer':
         stopDomObserver();
         return false;
+      }
+    } catch {
+      // Extension context invalidated or other runtime error — ignore silently
     }
-
     return false;
   }
 );

@@ -99,9 +99,24 @@ export interface DomTreeNode {
   parentSelector?: string;
 }
 
-/** Element styles data */
+/** A single CSS rule matching an element */
+export interface CSSRuleInfo {
+  /** Full selector text, e.g. ".btn:hover" */
+  selector: string;
+  /** Filename or "<style>" for inline sheets */
+  source: string;
+  /** Property → value map for properties declared in this rule */
+  properties: Record<string, string>;
+}
+
+/** Element styles data — Chrome DevTools style (inline + CSS rules + computed) */
 export interface ElementStylesData {
-  styles: Record<string, string>;
+  /** Inline styles set directly on element.style */
+  inline: Record<string, string>;
+  /** Matching CSS rules from stylesheets, highest specificity first */
+  rules: CSSRuleInfo[];
+  /** Filtered getComputedStyle() result */
+  computed: Record<string, string>;
   boxModel: BoxModelData;
   tagName: string;
   id: string;
@@ -204,7 +219,9 @@ export type PanelToBackgroundMessage =
   | { type: 'delete-cookie'; tabId: number; url: string; name: string }
   | { type: 'get-storage'; tabId: number; storageType: string }
   | { type: 'set-blocked-urls'; tabId: number; urls: string[] }
-  | { type: 'set-selected-element'; tabId: number; selector: string };
+  | { type: 'set-selected-element'; tabId: number; selector: string }
+  | { type: 'apply-device-emulation'; tabId: number; width: number; height: number; deviceScaleFactor: number; mobile: boolean }
+  | { type: 'reset-device-emulation'; tabId: number };
 
 // =============================================
 // Messages sent from background → panel
@@ -230,4 +247,6 @@ export type BackgroundToPanelMessage =
   | { type: 'force-state-result'; data: boolean }
   | WebSocketMessage
   | { type: 'inspect-element-selected'; selector: string; tagName: string; id: string; className: string }
-  | { type: 'inspect-mode-cancelled' };
+  | { type: 'inspect-mode-cancelled' }
+  | { type: 'device-emulation-applied'; success: boolean; error?: string }
+  | { type: 'device-emulation-reset'; success: boolean; error?: string };

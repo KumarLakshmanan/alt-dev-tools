@@ -1,6 +1,6 @@
 {
   "name": "devtools-sidebar-extension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ALT-DEV TOOLS — Chrome Extension with CRXJS + TypeScript",
   "private": true,
   "type": "module",
@@ -14,8 +14,12 @@
   "license": "ISC",
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.28",
+    "@preact/preset-vite": "^2.10.3",
     "chrome-types": "^0.1.327",
     "typescript": "^5.7.3",
     "vite": "^6.0.7"
+  },
+  "dependencies": {
+    "preact": "^10.28.4"
   }
 }

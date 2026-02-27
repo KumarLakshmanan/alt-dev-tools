@@ -49,15 +49,57 @@ chrome.runtime.onConnect.addListener((port) => {
 
 function routeMessage(message: PanelToBackgroundMessage, tabId: number): void {
   switch (message.type) {
-    case 'eval-in-page':
-      safeSendToTab(
-        tabId,
-        { type: 'eval-in-page', expression: message.expression },
-        (response) => {
-          panelPort?.postMessage({ type: 'eval-result', result: response });
+    case 'eval-in-page': {
+      // Use chrome.scripting.executeScript with world: 'MAIN' so it bypasses
+      // the page's Content Security Policy (no unsafe-eval restriction).
+      const expression = message.expression;
+      chrome.scripting.executeScript(
+        {
+          target: { tabId },
+          world: 'MAIN',
+          // chrome-types types func as () => void but executeScript supports func+args
+          func: ((expr: string) => {
+            let res: unknown;
+            let isError = false;
+            try {
+              // Indirect eval: runs in global scope, bypasses page CSP
+              res = (0, eval)(expr); // eslint-disable-line no-eval
+            } catch (e) {
+              res = (e as Error).message || String(e);
+              isError = true;
+            }
+            if (isError) return { result: { type: 'error', value: String(res) }, isError: true };
+            if (res === null) return { result: { type: 'null', value: 'null' }, isError: false };
+            if (res === undefined) return { result: { type: 'undefined', value: 'undefined' }, isError: false };
+            if (typeof res === 'function') {
+              return { result: { type: 'function', value: `ƒ ${(res as { name?: string }).name || 'anonymous'}()` }, isError: false };
+            }
+            if (typeof res === 'object') {
+              try {
+                const json = JSON.stringify(res, null, 2);
+                return { result: { type: Array.isArray(res) ? 'array' : 'object', value: json?.substring(0, 10000) || String(res) }, isError: false };
+              } catch {
+                return { result: { type: 'object', value: String(res) }, isError: false };
+              }
+            }
+            return { result: { type: typeof res, value: String(res) }, isError: false };
+          }) as unknown as () => void,
+          args: [expression],
         }
-      );
+      ).then((results) => {
+        const res = results?.[0]?.result as { result: object; isError: boolean } | undefined;
+        panelPort?.postMessage({
+          type: 'eval-result',
+          result: res ?? { result: { type: 'undefined', value: 'undefined' }, isError: false },
+        });
+      }).catch((err: Error) => {
+        panelPort?.postMessage({
+          type: 'eval-result',
+          result: { result: { type: 'error', value: err?.message || 'Script execution failed' }, isError: true },
+        });
+      });
       break;
+    }
 
     case 'get-page-sources':
       safeSendToTab(tabId, { type: 'get-page-sources' }, (response) => {
@@ -211,6 +253,38 @@ function routeMessage(message: PanelToBackgroundMessage, tabId: number): void {
         expression: `window.postMessage({__devtools_set_selected_element__: true, selector: ${JSON.stringify(message.selector || '')}}, "*"); "ok"`,
       });
       break;
+
+    case 'apply-device-emulation': {
+      const { width, height, deviceScaleFactor, mobile } = message;
+      chrome.debugger.attach({ tabId }, '1.3', () => {
+        const attachErr = (chrome.runtime as any).lastError;
+        // Proceed even if already attached (another session has it)
+        if (attachErr && !attachErr.message?.includes('already attached')) {
+          panelPort?.postMessage({ type: 'device-emulation-applied', success: false, error: attachErr.message });
+          return;
+        }
+        chrome.debugger.sendCommand({ tabId }, 'Emulation.setDeviceMetricsOverride', {
+          width, height, deviceScaleFactor, mobile,
+        } as object, () => {
+          const cmdErr = (chrome.runtime as any).lastError;
+          if (cmdErr) {
+            panelPort?.postMessage({ type: 'device-emulation-applied', success: false, error: cmdErr.message });
+          } else {
+            panelPort?.postMessage({ type: 'device-emulation-applied', success: true });
+          }
+        });
+      });
+      break;
+    }
+
+    case 'reset-device-emulation': {
+      chrome.debugger.sendCommand({ tabId }, 'Emulation.clearDeviceMetricsOverride', {} as object, () => {
+        chrome.debugger.detach({ tabId }, () => {
+          panelPort?.postMessage({ type: 'device-emulation-reset', success: true });
+        });
+      });
+      break;
+    }
   }
 }
 

@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:          #f8fafc;
+  --card:        #ffffff;
+  --border:      #e2e8f0;
+  --text-muted:  #64748b;
+  color-scheme: light dark;
+}
+
+.dark {
+  --bg:         #0f1117;
+  --card:       #161b22;
+  --border:     #30363d;
+  --text-muted: #8b949e;
+}
+
+body {
+  background-color: var(--bg);
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: background-color 0.2s;
+}
+
+/* ── Code / monospace snippets ── */
+.font-mono {
+  font-family: 'JetBrains Mono', Menlo, monospace;
+}
+
+/* ── Gradient border card ── */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Panel tab pill (used on homepage) ── */
+.panel-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(59,130,246,.12);
+  border: 1px solid rgba(59,130,246,.25);
+  border-radius: 9999px;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #60a5fa;
+}
+.dark .panel-pill {
+  background: rgba(96,165,250,.1);
+  border-color: rgba(96,165,250,.2);
+  color: #93c5fd;
+}

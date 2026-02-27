@@ -1,0 +1,32 @@
+{
+  "name": "HoverQR",
+  "short_name": "HoverQR",
+  "description": "QR & Barcode Toolkit for Chrome — decode, generate, and scan from any page.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#0f0e1a",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "/icon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

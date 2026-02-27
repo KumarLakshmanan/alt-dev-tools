@@ -1,10 +1,15 @@
 /**
  * Panel — main entry point.
- * Composes all tab modules, manages tab switching and the port message router.
+ * Renders the Preact component tree into #app, then wires up all tab modules,
+ * manages tab switching and the port message router.
  */
+import { render, h } from 'preact';
 import { createInitialState } from './state';
 import { connectPort, onPortMessage, onReconnect, sendMessage } from './connection';
 import { showToast } from './utils';
+
+// ── Preact component tree ──
+import { App } from './components/App';
 
 // Tab modules
 import {
@@ -16,9 +21,22 @@ import { initConsoleTab, handleConsoleMessage, handleEvalResult } from './tabs/c
 import { initNetworkTab, handleNetworkMessage, handleWebSocketMessage, clearNetworkIfNotPreserved } from './tabs/network';
 import { initSourcesTab, loadPageSources, handlePageSources, loadSourceFile } from './tabs/sources';
 import { initApplicationTab, loadApplicationData, handleCookiesData, handleStorageData, loadCookies } from './tabs/application';
+import { initPerformanceTab, loadPerformanceData, handlePerformanceData } from './tabs/performance';
+import { initDeviceTab, handleDeviceEmulationResult } from './tabs/device';
 
 // ── State ──
 const state = createInitialState();
+
+// ── DOM Builder ──
+/**
+ * Renders the Preact `<App>` component tree synchronously into `#app`.
+ * After this call all element IDs are present in the real DOM and can
+ * be queried by the tabs/*.ts modules in `init()`.
+ */
+function buildLayout(): void {
+  const appEl = document.getElementById('app');
+  if (appEl) render(h(App, {}), appEl);
+}
 
 // ── Tab Switching ──
 function switchTab(tabName: string): void {
@@ -32,6 +50,7 @@ function switchTab(tabName: string): void {
   if (tabName === 'sources' && state.sources.files.length === 0) loadPageSources();
   if (tabName === 'elements' && !state.elements.domTree) loadDomTree();
   if (tabName === 'application') loadApplicationData();
+  if (tabName === 'performance') loadPerformanceData();
 }
 
 // ── Port message router ──
@@ -42,7 +61,13 @@ function handleMessage(message: any): void {
     case 'dom-tree': handleDomTree(message.data); break;
     case 'page-sources': handlePageSources(message.data); break;
     case 'element-styles': handleElementStyles(message.data); break;
-    case 'eval-result': handleEvalResult(message.result); break;
+    case 'eval-result':
+      if (state.activeTab === 'performance') {
+        handlePerformanceData(message.result);
+      } else {
+        handleEvalResult(message.result);
+      }
+      break;
     case 'event-listeners': handleEventListeners(message.data); break;
     case 'dom-mutation': handleDomMutation(message.mutations); break;
     case 'copy-html-result': handleCopyHtmlResult(message.data); break;
@@ -56,6 +81,8 @@ function handleMessage(message: any): void {
     case 'websocket': handleWebSocketMessage(message); break;
     case 'inspect-element-selected': handleInspectElementSelected(message); break;
     case 'inspect-mode-cancelled': cancelInspectMode(); break;
+    case 'device-emulation-applied':
+    case 'device-emulation-reset': handleDeviceEmulationResult(message); break;
   }
 }
 
@@ -67,6 +94,8 @@ function init(): void {
   initNetworkTab(state);
   initSourcesTab(state);
   initApplicationTab(state);
+  initPerformanceTab(state);
+  initDeviceTab(state);
 
   // Tab bar click handling
   document.querySelectorAll<HTMLElement>('.tab').forEach((tab) => {
@@ -83,12 +112,20 @@ function init(): void {
   });
   connectPort();
 
-  // Get current tab ID
-  chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-    if (tabs[0]) {
-      state.tabId = tabs[0].id ?? null;
-      sendMessage({ type: 'init', tabId: state.tabId! });
+  // Get current tab ID — try currentWindow first (best for side panels), fallback to lastFocusedWindow
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]?.id) {
+      state.tabId = tabs[0].id;
+      sendMessage({ type: 'init', tabId: state.tabId });
       loadDomTree();
+    } else {
+      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (fallbackTabs) => {
+        if (fallbackTabs[0]?.id) {
+          state.tabId = fallbackTabs[0].id;
+          sendMessage({ type: 'init', tabId: state.tabId });
+          loadDomTree();
+        }
+      });
     }
   });
 
@@ -110,5 +147,6 @@ function init(): void {
   });
 }
 
-// Run on load
+// Run on load — build DOM first, then wire up all modules
+buildLayout();
 init();

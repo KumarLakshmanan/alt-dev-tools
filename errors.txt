@@ -1,0 +1,31 @@
+Note: This emulation uses CSS injection to resize the page viewport. For full device emulation including touch events, use Chrome DevTools (F12).
+
+the device tab is not working. it should change the page viewport to match the selected device dimensions, but it does not seem to be applying the necessary CSS styles to achieve this. Additionally, the performance tab is not displaying any data, which may indicate an issue with how performance metrics are being collected or rendered in the panel.
+just like how the google chrome does that right ?
+
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+[object Object]
+Uncaught (in promise) TypeError: Failed to fetch
+An unknown error occurred when fetching the script.
+Uncaught Error: Extension context invalidated.
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+Uncaught Error: Extension context invalidated.
+Uncaught Error: Extension context invalidated.
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN
+./page-hooks.ts.js Content-script doesn't support HMR because the world is MAIN

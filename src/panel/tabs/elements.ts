@@ -9,7 +9,10 @@ import { escapeHtml, makeEditable, showToast } from '../utils';
 let isEditingDom = false;
 let domLoadRetries = 0;
 let domLoadTimeout: ReturnType<typeof setTimeout> | null = null;
+let mutationDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 let inspectModeOn = false;
+/** Set to true only when user explicitly selects/inspects an element; cleared after scroll */
+let pendingScrollOnLoad = false;
 
 // ── DOM references ──
 let elementsTree: HTMLElement;
@@ -172,7 +175,11 @@ export function handleDomTree(tree: any): void {
     const fragment = document.createDocumentFragment();
     renderDomNode(tree, fragment, 0);
     elementsTree.appendChild(fragment);
-    if (state.elements.selectedSelector) scrollToSelectedDomNode(state.elements.selectedSelector);
+    // Only scroll if an explicit element selection triggered this load
+    if (pendingScrollOnLoad && state.elements.selectedSelector) {
+      pendingScrollOnLoad = false;
+      scrollToSelectedDomNode(state.elements.selectedSelector);
+    }
   } catch (err: any) {
     elementsTree.innerHTML = '<div class="sources-placeholder">Error rendering DOM: ' + escapeHtml(err.message) + '</div>';
   }
@@ -185,50 +192,95 @@ export function handleElementStyles(data: any): void {
     return;
   }
 
-  let stylesHtml = '';
+  // ── Element label ─────────────────────────────────────────────────────────
+  let html = '';
   if (data.tagName) {
-    stylesHtml += '<div style="color:var(--text-muted);margin-bottom:6px;font-size:10px;">';
-    stylesHtml += escapeHtml(data.tagName);
-    if (data.id) stylesHtml += '#' + escapeHtml(data.id);
-    if (data.className) stylesHtml += '.' + escapeHtml(String(data.className).trim().split(/\s+/).join('.'));
-    stylesHtml += '</div>';
+    html += '<div class="styles-element-label">';
+    html += escapeHtml(data.tagName);
+    if (data.id) html += '<span class="styles-el-id">#' + escapeHtml(data.id) + '</span>';
+    if (data.className) {
+      const classes = String(data.className).trim().split(/\s+/).filter(Boolean);
+      classes.forEach((c) => { html += '<span class="styles-el-class">.' + escapeHtml(c) + '</span>'; });
+    }
+    html += '</div>';
   }
 
-  if (data.styles && Object.keys(data.styles).length > 0) {
-    Object.keys(data.styles).sort().forEach((prop) => {
-      stylesHtml += '<div class="style-property">';
-      stylesHtml += '<input type="checkbox" class="style-toggle" data-prop="' + escapeHtml(prop) + '" data-value="' + escapeHtml(data.styles[prop]) + '" checked>';
-      stylesHtml += '<span class="style-prop-name">' + escapeHtml(prop) + ': </span>';
-      stylesHtml += '<span class="style-prop-value" data-prop="' + escapeHtml(prop) + '" title="Double-click to edit">' + escapeHtml(data.styles[prop]) + '</span>';
-      stylesHtml += '<span class="style-semicolon">;</span>';
-      stylesHtml += '</div>';
+  // ── element.style {} block (editable inline styles) ───────────────────────
+  html += '<div class="styles-rule-block">';
+  html += '<div class="styles-rule-header"><span class="styles-selector">element.style</span></div>';
+  html += '<div class="styles-rule-body">';
+  const inlineEntries = data.inline ? Object.entries(data.inline as Record<string, string>) : [];
+  if (inlineEntries.length > 0) {
+    inlineEntries.forEach(([prop, val]) => {
+      html += buildStyleRow(prop, val as string, true, true);
     });
   } else {
-    stylesHtml += '<div class="sources-placeholder">No computed styles</div>';
+    html += '<div class="styles-empty-rule">{ }</div>';
   }
-  elementsStyles.innerHTML = stylesHtml;
+  html += '</div></div>';
 
-  // style toggle + inline edit
-  elementsStyles.querySelectorAll<HTMLInputElement>('.style-toggle').forEach((cb) => {
-    cb.addEventListener('change', () => {
-      if (state.elements.selectedSelector) editDomStyle(state.elements.selectedSelector, cb.dataset.prop!, cb.dataset.value!, cb.checked);
-    });
+  // ── Matching CSS rule blocks ───────────────────────────────────────────────
+  const rules: any[] = data.rules || [];
+  rules.forEach((rule: any) => {
+    html += '<div class="styles-rule-block">';
+    html += '<div class="styles-rule-header">';
+    html += '<span class="styles-selector">' + escapeHtml(rule.selector) + '</span>';
+    html += '<span class="styles-source">' + escapeHtml(rule.source) + '</span>';
+    html += '</div>';
+    html += '<div class="styles-rule-body">';
+    const entries = Object.entries(rule.properties as Record<string, string>);
+    if (entries.length > 0) {
+      entries.forEach(([prop, val]) => {
+        html += buildStyleRow(prop, val as string, false, false);
+      });
+    }
+    html += '</div></div>';
   });
-  elementsStyles.querySelectorAll<HTMLElement>('.style-prop-value').forEach((valEl) => {
-    valEl.addEventListener('dblclick', () => {
-      const prop = valEl.dataset.prop!;
-      makeEditable(valEl, valEl.textContent || '', (newVal) => {
-        valEl.textContent = newVal;
+
+  // ── Computed styles section (collapsed by default) ────────────────────────
+  const computedEntries = data.computed ? Object.entries(data.computed as Record<string, string>).sort() : [];
+  if (computedEntries.length > 0) {
+    html += '<details class="styles-computed-section">';
+    html += '<summary class="styles-computed-toggle">Computed</summary>';
+    computedEntries.forEach(([prop, val]) => {
+      html += '<div class="style-property computed-prop">';
+      html += '<span class="style-prop-name">' + escapeHtml(prop) + ': </span>';
+      html += '<span class="style-prop-value computed-value">' + escapeHtml(val as string) + '</span>';
+      html += '<span class="style-semicolon">;</span>';
+      html += '</div>';
+    });
+    html += '</details>';
+  }
+
+  elementsStyles.innerHTML = html;
+
+  // ── Wire inline style editing (element.style block only) ─────────────────
+  const inlineBlock = elementsStyles.querySelector('.styles-rule-block');
+  if (inlineBlock) {
+    inlineBlock.querySelectorAll<HTMLInputElement>('.style-toggle').forEach((cb) => {
+      cb.addEventListener('change', () => {
         if (state.elements.selectedSelector) {
-          editDomStyle(state.elements.selectedSelector, prop, newVal, true);
-          const toggle = valEl.parentElement?.querySelector<HTMLInputElement>('.style-toggle');
-          if (toggle) toggle.dataset.value = newVal;
+          editDomStyle(state.elements.selectedSelector, cb.dataset.prop!, cb.dataset.value!, cb.checked);
+          cb.closest('.style-property')?.classList.toggle('disabled', !cb.checked);
         }
-      }, () => { isEditingDom = true; }, () => { isEditingDom = false; });
+      });
     });
-  });
+    inlineBlock.querySelectorAll<HTMLElement>('.style-prop-value[data-prop]').forEach((valEl) => {
+      valEl.addEventListener('dblclick', () => {
+        const prop = valEl.dataset.prop!;
+        makeEditable(valEl, valEl.textContent || '', (newVal) => {
+          valEl.textContent = newVal;
+          if (state.elements.selectedSelector) {
+            editDomStyle(state.elements.selectedSelector, prop, newVal, true);
+            const toggle = valEl.parentElement?.querySelector<HTMLInputElement>('.style-toggle');
+            if (toggle) toggle.dataset.value = newVal;
+          }
+        }, () => { isEditingDom = true; }, () => { isEditingDom = false; });
+      });
+    });
+  }
 
-  // Box model
+  // ── Box model ─────────────────────────────────────────────────────────────
   if (data.boxModel) {
     const bm = data.boxModel;
     const m = bm.margin, p = bm.padding, b = bm.border;
@@ -254,6 +306,22 @@ export function handleElementStyles(data: any): void {
   }
 }
 
+/** Build a single style-property row HTML string */
+function buildStyleRow(prop: string, val: string, editable: boolean, showToggle: boolean): string {
+  let row = '<div class="style-property">';
+  if (showToggle) {
+    row += '<input type="checkbox" class="style-toggle" data-prop="' + escapeHtml(prop)
+      + '" data-value="' + escapeHtml(val) + '" checked>';
+  }
+  row += '<span class="style-prop-name">' + escapeHtml(prop) + ': </span>';
+  row += '<span class="style-prop-value' + (editable ? '' : '') + '" data-prop="'
+    + (editable ? escapeHtml(prop) : '') + '"'
+    + (editable ? ' title="Double-click to edit"' : '') + '>' + escapeHtml(val) + '</span>';
+  row += '<span class="style-semicolon">;</span>';
+  row += '</div>';
+  return row;
+}
+
 export function handleEventListeners(listeners: any[]): void {
   state.elements.eventListeners = listeners || [];
   const container = document.getElementById('elements-event-listeners');
@@ -276,14 +344,24 @@ export function handleEventListeners(listeners: any[]): void {
 export function handleInspectElementSelected(message: any): void {
   inspectModeOn = false;
   inspectBtn.classList.remove('active');
-  switchTabFn('elements');
+
   if (message.selector) {
     state.elements.selectedSelector = message.selector;
     if (state.tabId) {
       sendMessage({ type: 'get-element-styles', tabId: state.tabId, selector: message.selector });
       sendMessage({ type: 'highlight-element', tabId: state.tabId, selector: message.selector });
     }
-    loadDomTree();
+
+    const treeAlreadyLoaded = !!state.elements.domTree;
+    pendingScrollOnLoad = true; // signal handleDomTree to scroll after load
+    switchTabFn('elements');
+
+    if (treeAlreadyLoaded) {
+      // DOM already rendered — scroll to the node immediately
+      pendingScrollOnLoad = false;
+      scrollToSelectedDomNode(message.selector);
+    }
+    // If tree was null, switchTabFn → loadDomTree → handleDomTree → scrollToSelectedDomNode
   }
 }
 
@@ -298,6 +376,7 @@ export function handleCopySelectorResult(data: string | null): void {
 export function handleDomMutation(mutations: any[]): void {
   if (!mutations || mutations.length === 0) return;
   if (isEditingDom) return;
+
   let badge = document.querySelector<HTMLElement>('.tab[data-tab="elements"] .mutation-badge');
   if (!badge) {
     badge = document.createElement('span');
@@ -306,7 +385,18 @@ export function handleDomMutation(mutations: any[]): void {
   }
   badge.textContent = '•';
   badge.title = mutations.length + ' DOM mutation(s) detected';
-  if (state.activeTab === 'elements') { loadDomTree(); badge.textContent = ''; }
+
+  // Debounce the tree reload — only reload after mutations settle for 1.5 s
+  if (state.activeTab === 'elements') {
+    if (mutationDebounceTimer) clearTimeout(mutationDebounceTimer);
+    mutationDebounceTimer = setTimeout(() => {
+      mutationDebounceTimer = null;
+      if (!isEditingDom) {
+        loadDomTree();
+        if (badge) badge.textContent = '';
+      }
+    }, 1500);
+  }
 }
 
 export function cancelInspectMode(): void {

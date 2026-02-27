@@ -1,8 +1,9 @@
 /**
  * Computed styles extraction for the content script.
+ * Returns inline styles, matching CSS rules, and computed styles — Chrome DevTools style.
  */
 
-import type { ElementStylesData } from '@/shared/types';
+import type { ElementStylesData, CSSRuleInfo } from '@/shared/types';
 
 const IMPORTANT_PROPERTIES = [
   'display', 'position', 'width', 'height',
@@ -17,18 +18,76 @@ const IMPORTANT_PROPERTIES = [
 
 const IGNORED_VALUES = new Set(['none', 'normal', 'auto', '0px', 'rgba(0, 0, 0, 0)']);
 
+/** Extract inline styles directly set on element.style */
+function getInlineStyles(el: HTMLElement): Record<string, string> {
+  const inline: Record<string, string> = {};
+  for (let i = 0; i < el.style.length; i++) {
+    const prop = el.style[i];
+    const val = el.style.getPropertyValue(prop);
+    if (val) inline[prop] = val;
+  }
+  return inline;
+}
+
+/** Get filename portion of a URL for display in the source hint */
+function sourceLabel(href: string | null): string {
+  if (!href) return '<style>';
+  try {
+    const pathname = new URL(href).pathname;
+    return pathname.split('/').pop() || href;
+  } catch {
+    return href;
+  }
+}
+
+/** Extract all CSS rules from stylesheets that match the element */
+function getMatchingCSSRules(el: HTMLElement): CSSRuleInfo[] {
+  const rules: CSSRuleInfo[] = [];
+  try {
+    for (const sheet of Array.from(document.styleSheets)) {
+      let cssRules: CSSRuleList | null = null;
+      try { cssRules = sheet.cssRules; } catch { continue; } // skip cross-origin sheets
+      if (!cssRules) continue;
+      for (const rule of Array.from(cssRules)) {
+        if (!(rule instanceof CSSStyleRule)) continue;
+        let matches = false;
+        try { matches = el.matches(rule.selectorText); } catch { continue; }
+        if (!matches) continue;
+        const properties: Record<string, string> = {};
+        for (let i = 0; i < rule.style.length; i++) {
+          const prop = rule.style[i];
+          properties[prop] = rule.style.getPropertyValue(prop);
+        }
+        if (Object.keys(properties).length === 0) continue;
+        rules.push({
+          selector: rule.selectorText,
+          source: sourceLabel(sheet.href),
+          properties,
+        });
+      }
+    }
+  } catch { /* ignore */ }
+  return rules;
+}
+
 export function getElementStyles(selector: string): ElementStylesData | null {
   try {
     const el = document.querySelector(selector) as HTMLElement | null;
     if (!el) return null;
 
-    const computed = window.getComputedStyle(el);
-    const styles: Record<string, string> = {};
+    // Inline styles
+    const inline = getInlineStyles(el);
 
+    // Matching CSS rules
+    const rules = getMatchingCSSRules(el);
+
+    // Filtered computed styles
+    const computed = window.getComputedStyle(el);
+    const computedMap: Record<string, string> = {};
     IMPORTANT_PROPERTIES.forEach((prop) => {
       const val = computed.getPropertyValue(prop);
       if (val && !IGNORED_VALUES.has(val)) {
-        styles[prop] = val;
+        computedMap[prop] = val;
       }
     });
 
@@ -56,7 +115,9 @@ export function getElementStyles(selector: string): ElementStylesData | null {
     };
 
     return {
-      styles,
+      inline,
+      rules,
+      computed: computedMap,
       boxModel,
       tagName: el.tagName.toLowerCase(),
       id: el.id,
@@ -66,3 +127,4 @@ export function getElementStyles(selector: string): ElementStylesData | null {
     return null;
   }
 }
+

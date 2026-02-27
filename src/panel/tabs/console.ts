@@ -121,18 +121,28 @@ function getEntryLevel(method: string): string {
 
 function getEntryIcon(method: string): string {
   switch (method) {
-    case 'warn': return '⚠';
-    case 'error': return '✕';
-    case 'info': return 'ℹ';
-    case 'debug': return '🐛';
-    case 'command': return '›';
-    case 'result': return '‹';
-    case 'trace': return '📋';
-    case 'group': return '▼';
-    case 'groupCollapsed': return '▶';
-    case 'groupEnd': return '';
-    case 'timeEnd': return '⏱';
-    default: return '';
+    case 'warn':
+      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    case 'error':
+      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+    case 'info':
+      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+    case 'debug':
+      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M9 9a3 3 0 0 1 6 0c0 1-.5 2-1.5 2.5L12 13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    case 'command':
+      return '›';
+    case 'result':
+      return '‹';
+    case 'trace':
+      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>';
+    case 'group':
+      return '▼';
+    case 'groupCollapsed':
+      return '▶';
+    case 'timeEnd':
+      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+    default:
+      return '';
   }
 }
 
@@ -256,7 +266,7 @@ function appendConsoleEntry(entry: ConsoleEntry): void {
 
   const icon = document.createElement('span');
   icon.className = 'entry-icon';
-  icon.textContent = getEntryIcon(entry.method);
+  icon.innerHTML = getEntryIcon(entry.method);
   div.appendChild(icon);
 
   const content = document.createElement('span');

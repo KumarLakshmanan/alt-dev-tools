@@ -4,7 +4,7 @@
  */
 import type { PanelState } from '../state';
 import { sendMessage } from '../connection';
-import { escapeHtml, formatBytes, formatTime, getFileName, showToast } from '../utils';
+import { escapeHtml, formatBytes, formatTime, getFileName, showToast, showContextMenu } from '../utils';
 
 let state: PanelState;
 
@@ -231,6 +231,50 @@ function appendNetworkEntry(entry: any, index: number): void {
     if (entry.resourceType === 'websocket') showWsFramesForEntry();
   });
 
+  // Right-click context menu for network rows
+  tr.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    showContextMenu(e.pageX, e.pageY, [
+      {
+        label: 'Open in new tab',
+        action: () => { if (entry.url) window.open(entry.url, '_blank'); },
+      },
+      {
+        label: 'Copy URL',
+        action: () => { navigator.clipboard.writeText(entry.url || '').catch(() => {}); showToast('URL copied'); },
+      },
+      {
+        label: 'Copy as cURL',
+        action: () => {
+          const curl = buildCurlCommand(entry);
+          navigator.clipboard.writeText(curl).catch(() => {});
+          showToast('cURL copied');
+        },
+      },
+      {
+        label: 'Copy response body',
+        action: () => {
+          navigator.clipboard.writeText(entry.responseBody || '').catch(() => {});
+          showToast('Response copied');
+        },
+      },
+      {
+        label: 'Block this URL pattern',
+        action: () => {
+          try {
+            const url = new URL(entry.url || '');
+            const pattern = url.hostname + url.pathname;
+            if (!state.network.blockedUrls.includes(pattern)) {
+              state.network.blockedUrls.push(pattern);
+              if (state.tabId) sendMessage({ type: 'set-blocked-urls', tabId: state.tabId, urls: state.network.blockedUrls });
+              showToast('URL pattern blocked: ' + pattern);
+            }
+          } catch { /* ignore */ }
+        },
+      },
+    ]);
+  });
+
   networkTableBody.appendChild(tr);
 }
 
@@ -413,13 +457,18 @@ function exportAsHar(): void {
   URL.revokeObjectURL(url);
 }
 
-function copyCurl(): void {
-  const e = state.network.selectedEntry;
-  if (!e) return;
+function buildCurlCommand(e: any): string {
   let curl = "curl '" + (e.url || '') + "'";
   if (e.method && e.method !== 'GET') curl += ' -X ' + e.method;
   Object.keys(e.requestHeaders || {}).forEach((k) => { curl += " -H '" + k + ': ' + e.requestHeaders[k] + "'"; });
   if (e.requestBody) curl += " --data-raw '" + e.requestBody.replace(/'/g, "'\\''") + "'";
+  return curl;
+}
+
+function copyCurl(): void {
+  const e = state.network.selectedEntry;
+  if (!e) return;
+  const curl = buildCurlCommand(e);
   navigator.clipboard.writeText(curl).then(() => {
     const btn = document.getElementById('network-copy-curl')!;
     btn.textContent = '✓'; setTimeout(() => { btn.textContent = 'cURL'; }, 1500);
