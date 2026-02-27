@@ -1,6 +1,6 @@
-# DodoPayments — HoverQR Pro Setup Guide
+# DodoPayments — ALT-DEV TOOLS Pro Setup Guide
 
-This guide covers everything needed to go live with HoverQR Pro payments.
+This guide covers everything needed to go live with ALT-DEV TOOLS Pro payments.
 
 ---
 
@@ -20,13 +20,13 @@ This guide covers everything needed to go live with HoverQR Pro payments.
 
 | Field | Value |
 |-------|-------|
-| **Product Name** | HoverQR Pro |
+| **Product Name** | ALT-DEV TOOLS Pro |
 | **Type** | `One-time payment` |
 | **Price** | `$9.00` USD |
 | **License Keys** | ✅ Enable |
 | **License Key Expiry** | `No expiry` (lifetime) |
 | **Activation Limit** | `Unlimited` (or `5` for fair use) |
-| **Activation Instructions** | Open the HoverQR sidebar → Subscription → "I already have a key" → Paste key → Activate |
+| **Activation Instructions** | Open the ALT-DEV TOOLS sidebar → Subscription → "I already have a key" → Paste key → Activate |
 
 > ⚠️ **You must enable License Keys** on the product for automatic key generation after payment.
 
@@ -49,7 +49,7 @@ DODO_PRODUCT_ID=prd_XXXXXXXXXXXX
 
 | Field | Value |
 |-------|-------|
-| **Name** | HoverQR Production |
+| **Name** | ALT-DEV TOOLS Production |
 | **Environment** | `live_mode` |
 
 Copy the key and update `.env.local`:
@@ -65,7 +65,7 @@ DODO_PAYMENTS_ENVIRONMENT=live_mode
 
 ```env
 # App
-NEXT_PUBLIC_BASE_URL=https://hoverqr.codingfrontend.in
+NEXT_PUBLIC_BASE_URL=https://ALT-DEV TOOLS.codingfrontend.in
 
 # DodoPayments
 DODO_PAYMENTS_API_KEY=CbuVAZXhkqHsTZlC...   ← your key
@@ -92,7 +92,7 @@ Redirects to /payment/success?license_key=LK-xxx&email=user@example.com
     ↓
 Success page shows key with copy button + activation steps
     ↓
-User opens HoverQR extension → Subscription → "I already have a key"
+User opens ALT-DEV TOOLS extension → Subscription → "I already have a key"
     ↓
 Paste key → Activate
     ↓

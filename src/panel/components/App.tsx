@@ -13,6 +13,7 @@ import { SourcesPanel } from './panels/SourcesPanel';
 import { ApplicationPanel } from './panels/ApplicationPanel';
 import { PerformancePanel } from './panels/PerformancePanel';
 import { DevicePanel } from './panels/DevicePanel';
+import { LicensePanel } from './panels/LicensePanel';
 
 export function App() {
   return (
@@ -25,6 +26,7 @@ export function App() {
       <ApplicationPanel />
       <PerformancePanel />
       <DevicePanel />
+      <LicensePanel />
     </>
   );
 }

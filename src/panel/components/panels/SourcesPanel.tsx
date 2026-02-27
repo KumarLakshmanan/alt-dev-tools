@@ -52,6 +52,17 @@ export function SourcesPanel() {
         </div>
 
       </div>
+
+      {/* ── Pro lock overlay ── */}
+      <div id="pro-lock-sources" class="pro-lock-overlay">
+        <div class="pro-lock-content">
+          <div class="pro-lock-icon">🔒</div>
+          <div class="pro-lock-title">Pro Feature</div>
+          <div class="pro-lock-desc">The Sources panel requires an ALT-DEV TOOLS Pro license.</div>
+          <button class="pro-lock-btn" data-go-tab="license">Unlock with License Key →</button>
+        </div>
+      </div>
+
     </div>
   );
 }

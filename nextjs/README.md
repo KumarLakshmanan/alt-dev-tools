@@ -1,6 +1,6 @@
-# HoverQR — Next.js Backend & Landing Page
+# ALT-DEV TOOLS — Next.js Backend & Landing Page
 
-Full-stack backend for the HoverQR Chrome extension. Built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, **Supabase**, and **Stripe**.
+Full-stack backend for the ALT-DEV TOOLS Chrome extension. Built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, **Supabase**, and **Stripe**.
 
 ---
 

@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
+import PageTracker from "./components/PageTracker";
 
 const BASE_URL = "https://altdevtools.codingfrontend.in";
 const TITLE = "ALT-DEV TOOLS — Sidebar DevTools for Chrome";
@@ -96,6 +97,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-[var(--bg)] text-slate-800 dark:text-slate-200 antialiased flex flex-col transition-colors duration-200">
         <ThemeProvider>
+          <PageTracker />
           <Header />
           <div className="flex-1">
             {children}

@@ -5,7 +5,7 @@
   "installCommand": "npm install",
   "regions": ["sin1"],
   "env": {
-    "NEXT_PUBLIC_BASE_URL": "https://hoverqr.codingfrontend.in",
+    "NEXT_PUBLIC_BASE_URL": "https://altdevtools.codingfrontend.in",
     "DODO_PAYMENTS_ENVIRONMENT": "live_mode",
     "DODO_PAYMENTS_API_KEY": "CbuVAZXhkqHsTZlC.YFynt77-RGUO7LCiwPAgdbbYNbDDP5G_ibuvXWNduGD3ITsL",
     "DODO_PRODUCT_ID": "pdt_0NYxyiGfX7ru2XclJi2ON"

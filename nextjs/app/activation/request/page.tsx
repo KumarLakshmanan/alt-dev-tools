@@ -14,7 +14,7 @@ export default function FindKeyPage() {
             Find Your License Key
           </h1>
           <p className="text-brand-500 dark:text-brand-400 text-sm">
-            Your HoverQR Pro license key was delivered automatically after purchase.
+            Your ALT-DEV TOOLS Pro license key was delivered automatically after purchase.
           </p>
         </div>
 
@@ -34,7 +34,7 @@ export default function FindKeyPage() {
               </div>
               <p className="text-xs text-brand-500 dark:text-brand-400">
                 DodoPayments sends your license key immediately after payment.
-                Search your inbox for <strong className="text-brand-600 dark:text-brand-300">HoverQR</strong> or{" "}
+                Search your inbox for <strong className="text-brand-600 dark:text-brand-300">ALT-DEV TOOLS</strong> or{" "}
                 <strong className="text-brand-600 dark:text-brand-300">DodoPayments</strong>.
                 Also check your spam / junk folder.
               </p>
@@ -54,7 +54,7 @@ export default function FindKeyPage() {
                 </p>
               </div>
               <p className="text-xs text-brand-500 dark:text-brand-400">
-                Click the HoverQR icon in Chrome toolbar → open the sidebar →
+                Click the ALT-DEV TOOLS icon in Chrome toolbar → open the sidebar →
                 scroll to <strong className="text-brand-600 dark:text-brand-300">Subscription</strong> →
                 click <strong className="text-brand-600 dark:text-brand-300">I already have a key</strong> →
                 paste your key and click <strong className="text-brand-600 dark:text-brand-300">Activate</strong>.
@@ -87,7 +87,7 @@ export default function FindKeyPage() {
             href="/pricing"
             className="bg-brand-gradient text-white font-bold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity text-sm"
           >
-            Buy HoverQR Pro →
+            Buy ALT-DEV TOOLS Pro →
           </Link>
           <Link
             href="/"

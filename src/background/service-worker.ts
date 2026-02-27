@@ -13,6 +13,33 @@ import type { PanelToBackgroundMessage } from '@/shared/types';
 // Open side panel when extension icon is clicked
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 
+// ── Setup page on install ──────────────────────────────────────────────────
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    // Open the welcome/setup page hosted on our website (no local HTML needed)
+    chrome.tabs.create({ url: 'https://altdevtools.codingfrontend.in/setup' });
+  }
+});
+
+// ── Uninstall feedback URL ────────────────────────────────────────────────
+chrome.runtime.setUninstallURL('https://altdevtools.codingfrontend.in/uninstall');
+
+// ── External message listener (from altdevtools website) ──────────────────
+// The payment success page sends a message via chrome.runtime.sendMessage(extId, msg)
+// after the user completes purchase. This activates Pro without any manual key entry.
+chrome.runtime.onMessageExternal.addListener((message, _sender, sendResponse) => {
+  if (message?.type === 'altdevtools:activate' && message?.key) {
+    const key = String(message.key).trim();
+    if (key.length >= 8) {
+      chrome.storage.local.set({ altdevtools_license: key }, () => {
+        sendResponse({ success: true });
+      });
+      return true; // keep message channel open for async response
+    }
+  }
+  sendResponse({ success: false });
+});
+
 // Connection state
 let panelPort: chrome.runtime.Port | null = null;
 const activeTabIds = new Set<number>();

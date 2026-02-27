@@ -56,6 +56,17 @@ export function DevicePanel() {
         A <em>"DevTools connected"</em> indicator will appear in the tab while emulation is active.
         Click <strong>Reset</strong> to restore the original viewport.
       </div>
+
+      {/* ── Pro lock overlay ── */}
+      <div id="pro-lock-device" class="pro-lock-overlay">
+        <div class="pro-lock-content">
+          <div class="pro-lock-icon">🔒</div>
+          <div class="pro-lock-title">Pro Feature</div>
+          <div class="pro-lock-desc">The Device emulation panel requires an ALT-DEV TOOLS Pro license.</div>
+          <button class="pro-lock-btn" data-go-tab="license">Unlock with License Key →</button>
+        </div>
+      </div>
+
     </div>
   );
 }

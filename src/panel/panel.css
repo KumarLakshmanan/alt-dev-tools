@@ -118,6 +118,7 @@ body {
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  position: relative; /* needed for .pro-lock-overlay absolute positioning */
 }
 
 .panel.active {
@@ -2141,3 +2142,284 @@ mark {
 .toolbar-btn-accent:hover {
   opacity: 0.85;
 }
+
+/* ============================================================
+   PRO LOCK OVERLAY
+   Appears over Sources / Application / Performance / Device
+   when no valid license is present.
+   ============================================================ */
+.pro-lock-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(15, 17, 22, 0.93);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pro-lock-overlay.hidden {
+  display: none;
+}
+.pro-lock-content {
+  text-align: center;
+  padding: 32px 24px;
+  max-width: 260px;
+}
+.pro-lock-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+.pro-lock-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e8e8e8;
+  margin-bottom: 8px;
+}
+.pro-lock-desc {
+  font-size: 12px;
+  color: #8b8b8b;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+.pro-lock-btn {
+  background: var(--accent-blue, #75beff);
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.pro-lock-btn:hover {
+  opacity: 0.85;
+}
+
+/* ============================================================
+   LICENSE PANEL
+   ============================================================ */
+#license-panel {
+  padding: 0;
+  overflow-y: auto;
+}
+
+/* Header */
+.license-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--border-color, #2a2a2a);
+}
+.license-header-icon {
+  color: var(--accent-blue, #75beff);
+  flex-shrink: 0;
+}
+.license-header-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e8e8e8;
+}
+.license-header-sub {
+  font-size: 11px;
+  color: #888;
+  margin-top: 1px;
+}
+
+/* Tier comparison */
+.license-tiers {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color, #2a2a2a);
+}
+.license-tier {
+  flex: 1;
+  background: var(--panel-bg, #1e1e1e);
+  border: 1px solid var(--border-color, #2a2a2a);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.license-tier-pro {
+  border-color: var(--accent-blue, #75beff);
+}
+.license-tier-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  color: #aaa;
+}
+.license-tier-pro .license-tier-label {
+  color: var(--accent-blue, #75beff);
+}
+.license-tier-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.license-tier-item {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #ccc;
+}
+.license-tier-item.available {
+  color: #7ec994;
+}
+.license-tier-item.pro {
+  color: var(--accent-blue, #75beff);
+}
+
+/* Activation form */
+.license-form {
+  padding: 14px 14px 10px;
+}
+.license-form.hidden {
+  display: none;
+}
+.license-form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+.license-input-row {
+  display: flex;
+  gap: 8px;
+}
+.license-key-input {
+  flex: 1;
+  background: var(--input-bg, #2a2a2a);
+  border: 1px solid var(--border-color, #3c3c3c);
+  border-radius: 4px;
+  color: #e8e8e8;
+  font-size: 12px;
+  font-family: monospace;
+  padding: 6px 9px;
+  outline: none;
+  min-width: 0;
+}
+.license-key-input:focus {
+  border-color: var(--accent-blue, #75beff);
+}
+.license-btn {
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.license-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.license-btn-primary {
+  background: var(--accent-blue, #75beff);
+  color: #000;
+}
+.license-btn-primary:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.license-btn-danger {
+  background: #3a1a1a;
+  color: #f87171;
+  border: 1px solid #5c2020;
+}
+.license-btn-danger:hover {
+  background: #5c2020;
+}
+
+/* Status line */
+.license-status {
+  font-size: 11px;
+  min-height: 16px;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+.license-status-success { color: #7ec994; }
+.license-status-error   { color: #f87171; }
+.license-status-info    { color: #8b8b8b; }
+
+/* Get key link */
+.license-get-key {
+  font-size: 11px;
+  color: #777;
+  margin-top: 10px;
+}
+.license-link {
+  color: var(--accent-blue, #75beff);
+  text-decoration: none;
+}
+.license-link:hover {
+  text-decoration: underline;
+}
+
+/* Activated state */
+.license-activated {
+  padding: 14px 14px;
+}
+.license-activated.hidden {
+  display: none;
+}
+.license-activated-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(126, 201, 148, 0.12);
+  border: 1px solid rgba(126, 201, 148, 0.35);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #7ec994;
+  margin-bottom: 14px;
+}
+.license-activated-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7ec994;
+}
+.license-activated-key-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.license-activated-key-label {
+  font-size: 11px;
+  color: #777;
+  white-space: nowrap;
+}
+.license-key-display {
+  font-family: monospace;
+  font-size: 12px;
+  color: #e8e8e8;
+  background: var(--input-bg, #2a2a2a);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color, #3c3c3c);
+  letter-spacing: 0.05em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+/* License tab slightly distinct */
+.tab-license {
+  opacity: 0.8;
+}
+.tab-license.active {
+  opacity: 1;
+}
+

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createDodoClient, DODO_PRODUCT_ID } from "@/lib/dodo";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://hoverqr.codingfrontend.in";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://altdevtools.codingfrontend.in";
 
 /**
  * GET /api/payments/checkout
- * Creates a DodoPayments checkout session without requiring email.
- * The user enters their email and billing details on the DodoPayments hosted page.
- * Redirects to the DodoPayments checkout URL.
+ * Creates a DodoPayments checkout session.
+ * After successful payment, Dodo Payments emails the license key directly to the buyer.
+ * No key generation or database required — 100% handled by Dodo.
  */
 export async function GET() {
   try {
@@ -25,7 +25,6 @@ export async function GET() {
       return_url: `${BASE_URL}/payment/success`,
     });
 
-    // The checkout URL is returned in the session object
     const checkoutUrl =
       (session as unknown as Record<string, string>).url ??
       (session as unknown as Record<string, string>).checkout_url;
@@ -47,7 +46,7 @@ export async function GET() {
 
 /**
  * POST /api/payments/checkout
- * Kept for backward compatibility. Returns JSON with checkout URL.
+ * Returns JSON with checkout URL (for client-side redirect).
  */
 export async function POST(_req: NextRequest) {
   try {

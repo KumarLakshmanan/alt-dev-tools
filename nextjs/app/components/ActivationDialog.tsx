@@ -65,7 +65,7 @@ export default function ActivationDialog({ open, onClose }: Props) {
 
       {/* Dialog */}
       <div
-        className="relative w-full max-w-md bg-white dark:bg-[#0f0e1a] border border-[#dde2ff] dark:border-[#312e81] rounded-2xl shadow-2xl p-8 z-10"
+        className="relative w-full max-w-md bg-white dark:bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl p-8 z-10"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -80,11 +80,11 @@ export default function ActivationDialog({ open, onClose }: Props) {
           <div className="flex justify-center mb-3">
             <Key size={40} className="text-brand-500 dark:text-brand-300" />
           </div>
-          <h2 className="text-2xl font-extrabold text-brand-700 dark:text-brand-200 mb-2">
-            Get My Activation Key
+          <h2 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mb-2">
+            Get My License Key
           </h2>
-          <p className="text-brand-500 dark:text-brand-400 text-sm">
-            Enter the email you used to purchase HoverQR Pro.
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
+            Enter the email you used to purchase ALT-DEV TOOLS Pro.
             <br />
             We&apos;ll send a one-time code to verify your key.
           </p>
@@ -92,7 +92,7 @@ export default function ActivationDialog({ open, onClose }: Props) {
 
         {!sent ? (
           <>
-            <label className="block text-sm font-semibold text-brand-600 dark:text-brand-300 mb-2">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
               Purchase Email
             </label>
             <input
@@ -102,7 +102,7 @@ export default function ActivationDialog({ open, onClose }: Props) {
               onKeyDown={(e) => e.key === "Enter" && handleRequest()}
               placeholder="your@email.com"
               autoFocus
-              className="w-full bg-[#f0f3ff] dark:bg-[#12104b] border border-brand-300 dark:border-brand-700 rounded-xl px-4 py-3 text-brand-800 dark:text-brand-100 placeholder-brand-400 dark:placeholder-brand-700 outline-none focus:border-brand-500 dark:focus:border-brand-400 mb-4"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 outline-none focus:border-brand-500 dark:focus:border-brand-400 mb-4"
             />
             {error && <p className="text-red-500 dark:text-red-400 text-xs mb-3">{error}</p>}
             <button

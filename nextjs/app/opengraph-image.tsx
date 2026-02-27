@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "HoverQR — QR & Barcode Toolkit for Chrome";
+export const alt = "ALT-DEV TOOLS — Sidebar DevTools for Chrome";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -46,7 +46,7 @@ export default function OgImage() {
           }}
         />
 
-        {/* QR icon SVG */}
+        {/* DevTools icon SVG */}
         <div
           style={{
             display: "flex",
@@ -60,7 +60,7 @@ export default function OgImage() {
             boxShadow: "0 8px 32px rgba(99,102,241,0.5)",
           }}
         >
-          {/* QR code icon (simplified SVG) */}
+          {/* Code brackets icon */}
           <svg
             width="56"
             height="56"
@@ -71,13 +71,8 @@ export default function OgImage() {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <rect x="3" y="3" width="7" height="7" />
-            <rect x="14" y="3" width="7" height="7" />
-            <rect x="3" y="14" width="7" height="7" />
-            <rect x="14" y="14" width="3" height="3" />
-            <line x1="14" y1="20" x2="17" y2="20" />
-            <line x1="20" y1="14" x2="20" y2="17" />
-            <line x1="20" y1="20" x2="21" y2="20" />
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
           </svg>
         </div>
 
@@ -92,7 +87,7 @@ export default function OgImage() {
             display: "flex",
           }}
         >
-          HoverQR
+          ALT-DEV TOOLS
         </div>
 
         {/* Subtitle */}
@@ -108,7 +103,7 @@ export default function OgImage() {
             display: "flex",
           }}
         >
-          QR &amp; Barcode Toolkit for Chrome
+          Sidebar DevTools for Chrome
         </div>
 
         {/* Feature pills */}
@@ -119,7 +114,7 @@ export default function OgImage() {
             gap: "16px",
           }}
         >
-          {["Decode on Hover", "Generate QR", "Snap & Decode", "Free & Pro"].map((label) => (
+          {["Elements", "Console", "Network", "Sources", "Performance"].map((label) => (
             <div
               key={label}
               style={{
@@ -150,7 +145,7 @@ export default function OgImage() {
             display: "flex",
           }}
         >
-          hoverqr.codingfrontend.in
+          altdevtools.codingfrontend.in
         </div>
       </div>
     ),

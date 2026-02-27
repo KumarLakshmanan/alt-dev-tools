@@ -9,6 +9,7 @@ import {
   IconApplication,
   IconPerformance,
   IconDevice,
+  IconLicense,
 } from './widgets/Icons';
 
 export function TabBar() {
@@ -41,6 +42,10 @@ export function TabBar() {
       <div class="tab" data-tab="device">
         <span class="tab-icon"><IconDevice /></span>
         Device
+      </div>
+      <div class="tab tab-license" data-tab="license">
+        <span class="tab-icon"><IconLicense /></span>
+        License
       </div>
     </div>
   );

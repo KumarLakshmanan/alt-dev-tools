@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "HoverQR privacy policy — learn how we handle your data (spoiler: we don't collect any).",
+    "ALT-DEV TOOLS privacy policy — learn how we handle your data (spoiler: we don't collect any).",
 };
 
 export default function PrivacyPage() {
@@ -20,10 +20,11 @@ export default function PrivacyPage() {
         {/* ─── Intro ─── */}
         <section>
           <p>
-            HoverQR (&quot;we&quot;, &quot;our&quot;, or &quot;the extension&quot;) is a Chrome browser
-            extension that decodes QR codes and barcodes from web page images and
-            generates QR codes from text. This Privacy Policy explains what data
-            we collect, how we use it, and your rights.
+            ALT-DEV TOOLS (&quot;we&quot;, &quot;our&quot;, or &quot;the extension&quot;) is a Chrome browser
+            extension that provides a sidebar DevTools alternative — Elements inspector,
+            Console, Network monitor, Sources viewer, Application storage panel, and
+            Performance profiler. This Privacy Policy explains what data we collect,
+            how we use it, and your rights.
           </p>
         </section>
 
@@ -49,17 +50,17 @@ export default function PrivacyPage() {
             2. Local Data Storage
           </h2>
           <p>
-            HoverQR stores the following data <strong>locally on your device</strong> using
+            ALT-DEV TOOLS stores the following data <strong>locally on your device</strong> using
             Chrome&apos;s <code>chrome.storage.local</code> API:
           </p>
           <ul className="list-disc pl-6 space-y-1">
             <li>
-              <strong>User preferences</strong> — feature toggles, theme preference,
-              hover tooltip delay.
+              <strong>User preferences</strong> — theme preference, panel layout,
+              and feature toggles.
             </li>
             <li>
-              <strong>QR history</strong> — text content of decoded and generated QR
-              codes, stored so you can revisit them later.
+              <strong>Console history</strong> — evaluated expressions in the built-in
+              Console panel, stored locally so you can revisit them.
             </li>
             <li>
               <strong>License status</strong> — whether you have activated a Pro
@@ -79,7 +80,7 @@ export default function PrivacyPage() {
           <p>
             When you activate a Pro license, the extension sends your{" "}
             <strong>license key only</strong> to our backend server at{" "}
-            <code>hoverqr.codingfrontend.in</code> to verify its validity. This
+            <code>altdevtools.codingfrontend.in</code> to verify its validity. This
             request does not include any personal information, browsing data, or
             device identifiers.
           </p>
@@ -95,7 +96,7 @@ export default function PrivacyPage() {
             4. Browser Permissions
           </h2>
           <p>
-            HoverQR requests the following Chrome permissions, each for a specific
+            ALT-DEV TOOLS requests the following Chrome permissions, each for a specific
             purpose:
           </p>
           <div className="overflow-x-auto">
@@ -107,16 +108,12 @@ export default function PrivacyPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-brand-100 dark:divide-brand-700">
-                <tr><td className="py-2 pr-4 font-mono text-xs">activeTab</td><td className="py-2">Access the current tab for decode/encode actions</td></tr>
-                <tr><td className="py-2 pr-4 font-mono text-xs">storage</td><td className="py-2">Save settings, history, and license locally</td></tr>
-                <tr><td className="py-2 pr-4 font-mono text-xs">clipboardWrite</td><td className="py-2">Copy QR images and decoded text</td></tr>
-                <tr><td className="py-2 pr-4 font-mono text-xs">clipboardRead</td><td className="py-2">Paste images from clipboard to decode</td></tr>
-                <tr><td className="py-2 pr-4 font-mono text-xs">scripting</td><td className="py-2">Run context menu actions on the page</td></tr>
-                <tr><td className="py-2 pr-4 font-mono text-xs">contextMenus</td><td className="py-2">Right-click &quot;Encode/Decode QR&quot; options</td></tr>
-                <tr><td className="py-2 pr-4 font-mono text-xs">sidePanel</td><td className="py-2">Sidebar UI for generator, decoder, history</td></tr>
-                <tr><td className="py-2 pr-4 font-mono text-xs">tabs</td><td className="py-2">Route messages between background and content scripts</td></tr>
-                <tr><td className="py-2 pr-4 font-mono text-xs">alarms</td><td className="py-2">Periodic license re-validation (every 12h)</td></tr>
-                <tr><td className="py-2 pr-4 font-mono text-xs">&lt;all_urls&gt;</td><td className="py-2">Content script runs on all pages to detect QR codes</td></tr>
+                <tr><td className="py-2 pr-4 font-mono text-xs">activeTab</td><td className="py-2">Inspect the active tab&apos;s DOM and network activity</td></tr>
+                <tr><td className="py-2 pr-4 font-mono text-xs">storage</td><td className="py-2">Save settings, console history, and license locally</td></tr>
+                <tr><td className="py-2 pr-4 font-mono text-xs">scripting</td><td className="py-2">Inject content scripts to observe the page&apos;s DOM and network</td></tr>
+                <tr><td className="py-2 pr-4 font-mono text-xs">sidePanel</td><td className="py-2">Sidebar DevTools UI (Elements, Console, Network, etc.)</td></tr>
+                <tr><td className="py-2 pr-4 font-mono text-xs">tabs</td><td className="py-2">Route messages between the panel and content scripts</td></tr>
+                <tr><td className="py-2 pr-4 font-mono text-xs">&lt;all_urls&gt;</td><td className="py-2">Content script runs on all pages to observe DOM and network events</td></tr>
               </tbody>
             </table>
           </div>
@@ -128,7 +125,7 @@ export default function PrivacyPage() {
             5. Third-Party Services
           </h2>
           <p>
-            HoverQR does not integrate with any third-party analytics, advertising,
+            ALT-DEV TOOLS does not integrate with any third-party analytics, advertising,
             or data collection services. The only external communication is the
             license validation request described in Section 3 and payment processing
             via <strong>DodoPayments</strong> when purchasing a Pro license.
@@ -143,7 +140,7 @@ export default function PrivacyPage() {
             >
               privacy policy
             </a>
-            . HoverQR does not receive or store credit card details.
+            . ALT-DEV TOOLS does not receive or store credit card details.
           </p>
         </section>
 
@@ -164,11 +161,11 @@ export default function PrivacyPage() {
             7. Data Retention &amp; Deletion
           </h2>
           <p>
-            All data stored by HoverQR is local to your browser. You can delete it
+            All data stored by ALT-DEV TOOLS is local to your browser. You can delete it
             at any time by:
           </p>
           <ul className="list-disc pl-6 space-y-1">
-            <li>Clicking &quot;Clear History&quot; in the extension sidebar.</li>
+            <li>Clicking &quot;Clear&quot; in the Console history within the extension sidebar.</li>
             <li>Uninstalling the extension (all local data is automatically removed).</li>
             <li>Manually clearing extension storage from Chrome settings.</li>
           </ul>
@@ -180,7 +177,7 @@ export default function PrivacyPage() {
             8. Children&apos;s Privacy
           </h2>
           <p>
-            HoverQR is not directed at children under the age of 13 and does not
+            ALT-DEV TOOLS is not directed at children under the age of 13 and does not
             knowingly collect any information from children.
           </p>
         </section>

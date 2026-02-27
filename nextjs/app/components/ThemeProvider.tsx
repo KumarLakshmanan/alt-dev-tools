@@ -19,10 +19,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem("hoverqr-theme") as Theme | null;
-    const preferred = window.matchMedia("(prefers-color-scheme: light)").matches
-      ? "light"
-      : "dark";
+    const stored = localStorage.getItem("altdevtools-theme") as Theme | null;
+    const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
     const initial = stored ?? preferred;
     setTheme(initial);
     applyTheme(initial);
@@ -40,7 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggle = () => {
     setTheme((prev) => {
       const next = prev === "dark" ? "light" : "dark";
-      localStorage.setItem("hoverqr-theme", next);
+      localStorage.setItem("altdevtools-theme", next);
       applyTheme(next);
       return next;
     });

@@ -1,7 +1,7 @@
 {
-  "name": "HoverQR",
-  "short_name": "HoverQR",
-  "description": "QR & Barcode Toolkit for Chrome — decode, generate, and scan from any page.",
+  "name": "ALT-DEV TOOLS",
+  "short_name": "ALT-DEV TOOLS",
+  "description": "Sidebar DevTools for Chrome - Elements, Console, Network, Sources, Application & Performance.",
   "start_url": "/",
   "display": "browser",
   "background_color": "#0f0e1a",

@@ -23,6 +23,7 @@ import { initSourcesTab, loadPageSources, handlePageSources, loadSourceFile } fr
 import { initApplicationTab, loadApplicationData, handleCookiesData, handleStorageData, loadCookies } from './tabs/application';
 import { initPerformanceTab, loadPerformanceData, handlePerformanceData } from './tabs/performance';
 import { initDeviceTab, handleDeviceEmulationResult } from './tabs/device';
+import { initLicenseTab, isProUnlocked } from './tabs/license';
 
 // ── State ──
 const state = createInitialState();
@@ -51,6 +52,30 @@ function switchTab(tabName: string): void {
   if (tabName === 'elements' && !state.elements.domTree) loadDomTree();
   if (tabName === 'application') loadApplicationData();
   if (tabName === 'performance') loadPerformanceData();
+}
+
+/** IDs of Pro lock overlay elements that should be shown/hidden. */
+const PRO_OVERLAYS = ['pro-lock-sources', 'pro-lock-application', 'pro-lock-performance', 'pro-lock-device'];
+
+/**
+ * Show overlays when Pro is NOT unlocked; hide them when it IS.
+ */
+function applyProLockState(): void {
+  const unlocked = isProUnlocked();
+  PRO_OVERLAYS.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('hidden', unlocked);
+  });
+}
+
+/** Wire up the "Unlock with License Key" buttons inside the overlays. */
+function wireProLockButtons(): void {
+  document.querySelectorAll<HTMLElement>('[data-go-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.goTab;
+      if (target) switchTab(target);
+    });
+  });
 }
 
 // ── Port message router ──
@@ -96,6 +121,19 @@ function init(): void {
   initApplicationTab(state);
   initPerformanceTab(state);
   initDeviceTab(state);
+
+  // License — async: loads stored key, updates Pro state, then applies overlays
+  initLicenseTab(state).then(() => {
+    applyProLockState();
+  });
+
+  // React to license changes at runtime (activate / deactivate)
+  window.addEventListener('altdevtools:prochange', () => {
+    applyProLockState();
+  });
+
+  // Wire overlay "Unlock" buttons
+  wireProLockButtons();
 
   // Tab bar click handling
   document.querySelectorAll<HTMLElement>('.tab').forEach((tab) => {

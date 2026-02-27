@@ -37,7 +37,7 @@ export default function FeedbackPage() {
           Thank you!
         </h1>
         <p className="text-brand-400 dark:text-brand-400/70">
-          Your feedback has been received. We appreciate you taking the time to help us improve HoverQR.
+          Your feedback has been received. We appreciate you taking the time to help us improve ALT-DEV TOOLS.
         </p>
       </main>
     );
@@ -53,7 +53,7 @@ export default function FeedbackPage() {
       </div>
       <p className="text-sm text-brand-400 dark:text-brand-400/70 mb-8">
         Found a bug? Have an idea? We&apos;d love to hear from you. Your feedback
-        helps us build a better HoverQR.
+        helps us build a better ALT-DEV TOOLS.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
