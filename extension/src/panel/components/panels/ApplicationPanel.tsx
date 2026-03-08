@@ -1,6 +1,5 @@
 /**
- * ApplicationPanel.tsx — Cookies, localStorage, and sessionStorage viewer
- * with sidebar navigation and a filterable data table.
+ * ApplicationPanel.tsx — Cookies, Storage, IndexedDB, Cache, Service Workers & Manifest viewer.
  */
 import {
   IconRefresh,
@@ -8,6 +7,10 @@ import {
   IconCookies,
   IconStorage,
   IconClipboard,
+  IconDatabase,
+  IconCache,
+  IconServiceWorker,
+  IconManifest,
 } from '../widgets/Icons';
 
 export function ApplicationPanel() {
@@ -27,6 +30,24 @@ export function ApplicationPanel() {
             </div>
             <div class="app-nav-item" data-app-section="sessionStorage">
               <IconClipboard /> Session Storage
+            </div>
+            <div class="app-nav-item" data-app-section="indexedDB">
+              <IconDatabase /> IndexedDB
+            </div>
+          </div>
+          <div class="app-sidebar-header">Cache</div>
+          <div class="app-nav">
+            <div class="app-nav-item" data-app-section="cacheStorage">
+              <IconCache /> Cache Storage
+            </div>
+          </div>
+          <div class="app-sidebar-header">Background</div>
+          <div class="app-nav">
+            <div class="app-nav-item" data-app-section="serviceWorkers">
+              <IconServiceWorker /> Service Workers
+            </div>
+            <div class="app-nav-item" data-app-section="manifest">
+              <IconManifest /> Manifest
             </div>
           </div>
         </div>

@@ -8,7 +8,14 @@
     "NEXT_PUBLIC_BASE_URL": "https://altdevtools.codingfrontend.in",
     "DODO_PAYMENTS_ENVIRONMENT": "live_mode",
     "DODO_PAYMENTS_API_KEY": "CbuVAZXhkqHsTZlC.YFynt77-RGUO7LCiwPAgdbbYNbDDP5G_ibuvXWNduGD3ITsL",
-    "DODO_PRODUCT_ID": "pdt_0NYxyiGfX7ru2XclJi2ON"
+    "DODO_PRODUCT_ID": "pdt_0NZPZLyClyuZmVT0dqyOj",
+    "SUPABASE_URL": "https://dfnvmnerspezuhvwzwkx.supabase.co",
+    "SUPABASE_SERVICE_ROLE_KEY": "sb_publishable_dxpPiQQyieWt1T5W96H6kQ_eFQrzl1K",
+    "SMTP_USER": "codingfrontendweb@gmail.com",
+    "SMTP_PASS": "ryhwhkczvbisrcqj",
+    "FEEDBACK_TO_EMAIL": "codingfrontendweb@gmail.com",
+    "ADMIN_USERNAME": "altdev-admin",
+    "ADMIN_PASSWORD": "altdev-analytics-2025"
   },
   "headers": [
     {

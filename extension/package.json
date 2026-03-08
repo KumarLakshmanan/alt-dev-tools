@@ -1,6 +1,6 @@
 {
   "name": "devtools-sidebar-extension",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ALT-DEV TOOLS — Chrome Extension with CRXJS + TypeScript",
   "private": true,
   "type": "module",

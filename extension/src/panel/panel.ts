@@ -20,10 +20,11 @@ import {
 import { initConsoleTab, handleConsoleMessage, handleEvalResult } from './tabs/console';
 import { initNetworkTab, handleNetworkMessage, handleWebSocketMessage, clearNetworkIfNotPreserved } from './tabs/network';
 import { initSourcesTab, loadPageSources, handlePageSources, loadSourceFile } from './tabs/sources';
-import { initApplicationTab, loadApplicationData, handleCookiesData, handleStorageData, loadCookies } from './tabs/application';
+import { initApplicationTab, loadApplicationData, handleCookiesData, handleStorageData, handleIndexedDBData, handleCacheData, handleServiceWorkersData, handleManifestData, loadCookies } from './tabs/application';
 import { initPerformanceTab, loadPerformanceData, handlePerformanceData } from './tabs/performance';
 import { initDeviceTab, handleDeviceEmulationResult } from './tabs/device';
 import { initLicenseTab, isProUnlocked } from './tabs/license';
+import { initSecurityTab, loadSecurityData, handleSecurityData } from './tabs/security';
 
 // ── State ──
 const state = createInitialState();
@@ -52,6 +53,7 @@ function switchTab(tabName: string): void {
   if (tabName === 'elements' && !state.elements.domTree) loadDomTree();
   if (tabName === 'application') loadApplicationData();
   if (tabName === 'performance') loadPerformanceData();
+  if (tabName === 'security') loadSecurityData();
 }
 
 /** IDs of Pro lock overlay elements that should be shown/hidden. */
@@ -89,6 +91,8 @@ function handleMessage(message: any): void {
     case 'eval-result':
       if (state.activeTab === 'performance') {
         handlePerformanceData(message.result);
+      } else if (state.activeTab === 'security') {
+        handleSecurityData(message.result);
       } else {
         handleEvalResult(message.result);
       }
@@ -103,6 +107,10 @@ function handleMessage(message: any): void {
     case 'cookies-data': handleCookiesData(message.data); break;
     case 'cookie-deleted': loadCookies(); break;
     case 'storage-data': handleStorageData(message.storageType, message.data); break;
+    case 'indexeddb-data': handleIndexedDBData(message.data); break;
+    case 'cache-data': handleCacheData(message.data); break;
+    case 'service-workers-data': handleServiceWorkersData(message.data); break;
+    case 'manifest-data': handleManifestData(message.data); break;
     case 'websocket': handleWebSocketMessage(message); break;
     case 'inspect-element-selected': handleInspectElementSelected(message); break;
     case 'inspect-mode-cancelled': cancelInspectMode(); break;
@@ -121,6 +129,7 @@ function init(): void {
   initApplicationTab(state);
   initPerformanceTab(state);
   initDeviceTab(state);
+  initSecurityTab(state);
 
   // License — async: loads stored key, updates Pro state, then applies overlays
   initLicenseTab(state).then(() => {
@@ -135,10 +144,13 @@ function init(): void {
   // Wire overlay "Unlock" buttons
   wireProLockButtons();
 
-  // Tab bar click handling
+  // Tab bar click handling + drag-to-reorder + overflow "›" button
+  const tabBarEl = document.querySelector<HTMLElement>('.tab-bar')!;
   document.querySelectorAll<HTMLElement>('.tab').forEach((tab) => {
     tab.addEventListener('click', () => switchTab(tab.dataset.tab!));
   });
+  initTabDragAndDrop(tabBarEl);
+  initTabOverflow(tabBarEl);
 
   // Connect to background
   onPortMessage(handleMessage);
@@ -183,6 +195,126 @@ function init(): void {
     handleMessage(message);
     return undefined;
   });
+}
+
+// ── Tab drag-and-drop reordering ──
+function initTabDragAndDrop(tabBar: HTMLElement): void {
+  let dragSrc: HTMLElement | null = null;
+
+  function onDragStart(this: HTMLElement, e: DragEvent) {
+    dragSrc = this;
+    this.classList.add('tab-dragging');
+    e.dataTransfer!.effectAllowed = 'move';
+    e.dataTransfer!.setData('text/plain', '');
+  }
+
+  function onDragEnd(this: HTMLElement) {
+    this.classList.remove('tab-dragging');
+    tabBar.querySelectorAll('.tab').forEach((t) => t.classList.remove('tab-drag-over'));
+    dragSrc = null;
+  }
+
+  function onDragOver(this: HTMLElement, e: DragEvent) {
+    if (!dragSrc || dragSrc === this) return;
+    e.preventDefault();
+    e.dataTransfer!.dropEffect = 'move';
+    tabBar.querySelectorAll('.tab').forEach((t) => t.classList.remove('tab-drag-over'));
+    this.classList.add('tab-drag-over');
+  }
+
+  function onDrop(this: HTMLElement, e: DragEvent) {
+    e.preventDefault();
+    if (!dragSrc || dragSrc === this) return;
+    const rect = this.getBoundingClientRect();
+    const insertBefore = e.clientX < rect.left + rect.width / 2;
+    if (insertBefore) {
+      tabBar.insertBefore(dragSrc, this);
+    } else {
+      this.after(dragSrc);
+    }
+    tabBar.querySelectorAll('.tab').forEach((t) => t.classList.remove('tab-drag-over'));
+  }
+
+  function attachHandlers(tab: HTMLElement) {
+    tab.draggable = true;
+    tab.addEventListener('dragstart', onDragStart);
+    tab.addEventListener('dragend', onDragEnd);
+    tab.addEventListener('dragover', onDragOver);
+    tab.addEventListener('drop', onDrop);
+  }
+
+  tabBar.querySelectorAll<HTMLElement>('.tab').forEach(attachHandlers);
+}
+
+// ── Tab overflow "›" button ──
+function initTabOverflow(tabBar: HTMLElement): void {
+  const overflowBtn = document.createElement('div');
+  overflowBtn.className = 'tab-overflow-btn';
+  overflowBtn.title = 'More tabs';
+  overflowBtn.textContent = '›';
+  tabBar.appendChild(overflowBtn);
+
+  const dropdown = document.createElement('div');
+  dropdown.className = 'tab-overflow-dropdown hidden';
+  document.body.appendChild(dropdown);
+
+  function updateOverflow() {
+    const allTabs = [...tabBar.querySelectorAll<HTMLElement>('.tab')];
+
+    // Show all tabs first so offsetWidth measurements are accurate
+    allTabs.forEach((t) => t.classList.remove('tab-overflow-hidden'));
+
+    const btnW = 26;
+    const availW = tabBar.offsetWidth - btnW;
+    let accW = 0;
+    const hidden: HTMLElement[] = [];
+
+    for (const tab of allTabs) {
+      accW += tab.offsetWidth;
+      if (accW > availW) {
+        hidden.push(tab);
+      }
+    }
+
+    hidden.forEach((t) => t.classList.add('tab-overflow-hidden'));
+    overflowBtn.classList.toggle('tab-overflow-visible', hidden.length > 0);
+
+    dropdown.innerHTML = '';
+    hidden.forEach((tab) => {
+      const item = document.createElement('div');
+      item.className = 'tab-overflow-item';
+      if (tab.classList.contains('active')) item.classList.add('active');
+      const iconEl = tab.querySelector('.tab-icon');
+      if (iconEl) {
+        const iconClone = iconEl.cloneNode(true) as HTMLElement;
+        iconClone.className = 'tab-icon';
+        item.appendChild(iconClone);
+      }
+      const label = (tab.textContent ?? '').trim();
+      item.appendChild(document.createTextNode(label));
+      item.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        if (tabName) switchTab(tabName);
+        dropdown.classList.add('hidden');
+      });
+      dropdown.appendChild(item);
+    });
+  }
+
+  overflowBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    updateOverflow();
+    dropdown.classList.toggle('hidden');
+    const rect = overflowBtn.getBoundingClientRect();
+    dropdown.style.top = rect.bottom + 'px';
+    dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+  });
+
+  document.addEventListener('click', () => dropdown.classList.add('hidden'));
+
+  const ro = new ResizeObserver(updateOverflow);
+  ro.observe(tabBar);
+  updateOverflow();
 }
 
 // Run on load — build DOM first, then wire up all modules

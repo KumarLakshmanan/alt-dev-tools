@@ -41,12 +41,21 @@ export function initConsoleTab(
   });
 
   // Level filters
-  document.querySelectorAll<HTMLInputElement>('.level-filter input').forEach((cb) => {
+  document.querySelectorAll<HTMLInputElement>('.level-filter input[data-level]').forEach((cb) => {
     cb.addEventListener('change', () => {
       (state.console.levels as any)[cb.dataset.level!] = cb.checked;
       renderConsole();
     });
   });
+
+  // Timestamps toggle
+  const timestampsCb = document.getElementById('console-timestamps') as HTMLInputElement | null;
+  if (timestampsCb) {
+    timestampsCb.addEventListener('change', () => {
+      state.console.showTimestamps = timestampsCb.checked;
+      renderConsole();
+    });
+  }
 
   // Input
   consoleInput.addEventListener('keydown', (e) => {
@@ -268,6 +277,15 @@ function appendConsoleEntry(entry: ConsoleEntry): void {
   icon.className = 'entry-icon';
   icon.innerHTML = getEntryIcon(entry.method);
   div.appendChild(icon);
+
+  // Timestamp (when enabled)
+  if (state.console.showTimestamps && entry.timestamp) {
+    const ts = document.createElement('span');
+    ts.className = 'entry-timestamp';
+    const d = new Date(entry.timestamp);
+    ts.textContent = d.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '.' + String(d.getMilliseconds()).padStart(3, '0') + ' ';
+    div.appendChild(ts);
+  }
 
   const content = document.createElement('span');
   content.className = 'entry-content';

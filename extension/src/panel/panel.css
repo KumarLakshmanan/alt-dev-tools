@@ -78,6 +78,8 @@ body {
   border-bottom: 1px solid var(--border-color);
   min-height: 29px;
   flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
 }
 
 .tab {
@@ -2421,5 +2423,189 @@ mark {
 }
 .tab-license.active {
   opacity: 1;
+}
+
+/* ── Tab drag-and-drop ── */
+.tab[draggable="true"] {
+  cursor: grab;
+}
+.tab[draggable="true"]:active {
+  cursor: grabbing;
+}
+.tab.tab-dragging {
+  opacity: 0.4;
+}
+.tab.tab-drag-over {
+  background: var(--bg-hover);
+  border-bottom-color: var(--accent-blue);
+}
+
+/* ── Tab overflow hidden ── */
+.tab.tab-overflow-hidden {
+  display: none;
+}
+
+/* ── Overflow "›" button ── */
+.tab-overflow-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 100%;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  padding: 0 4px;
+  margin-left: auto;
+  user-select: none;
+  transition: color 0.1s;
+}
+.tab-overflow-btn.tab-overflow-visible {
+  display: flex;
+}
+.tab-overflow-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+/* ── Overflow dropdown ── */
+.tab-overflow-dropdown {
+  position: fixed;
+  z-index: 9999;
+  background: var(--bg-secondary, #1e1e1e);
+  border: 1px solid var(--border-color, #3c3c3c);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  min-width: 140px;
+  overflow: hidden;
+}
+.tab-overflow-dropdown.hidden {
+  display: none;
+}
+.tab-overflow-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-family: '.SFNSDisplay-Regular', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  white-space: nowrap;
+}
+.tab-overflow-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.tab-overflow-item.active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ── Console timestamps ── */
+.entry-timestamp {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted, #666);
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+/* ── Application panel: cache group ── */
+.app-cache-group {
+  margin-bottom: 16px;
+}
+.app-cache-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #aaa);
+  padding: 4px 8px;
+  background: var(--hover-bg, #2a2a2a);
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+.app-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--accent-bg, rgba(88,166,255,0.15));
+  color: var(--accent, #58a6ff);
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+/* ── Security panel ── */
+.security-content {
+  padding: 12px;
+  overflow-y: auto;
+  height: 100%;
+}
+.security-section {
+  margin-bottom: 20px;
+}
+.security-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #666);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-color, #3c3c3c);
+}
+.security-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 5px 0;
+  font-size: 12px;
+}
+.security-label {
+  flex: 0 0 160px;
+  color: var(--text-secondary, #aaa);
+  font-weight: 500;
+}
+.security-value {
+  flex: 1;
+  color: var(--text-color, #e8e8e8);
+  word-break: break-all;
+}
+.security-value.secure {
+  color: #7ec994;
+}
+.security-value.insecure {
+  color: #f97583;
+}
+.security-value.warn {
+  color: #e3b341;
+}
+.security-mixed-list {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 0;
+}
+.security-mixed-item {
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--text-secondary, #aaa);
+  padding: 2px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.security-csp {
+  font-family: monospace;
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--input-bg, #2a2a2a);
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color, #3c3c3c);
+  color: var(--text-color, #e8e8e8);
+  max-height: 120px;
+  overflow-y: auto;
 }
 

@@ -1,7 +1,9 @@
 /**
- * Application Tab — Cookies, localStorage, sessionStorage tables & CRUD.
+ * Application Tab — Cookies, localStorage, sessionStorage, IndexedDB, CacheStorage,
+ * Service Workers & Web Manifest tables & CRUD.
  */
 import type { PanelState } from '../state';
+import type { IndexedDBDatabase, CacheStorageData, ServiceWorkerData, WebManifestData } from '@/shared/types';
 import { sendMessage } from '../connection';
 import { escapeHtml } from '../utils';
 
@@ -60,6 +62,14 @@ export function loadApplicationData(): void {
     sendMessage({ type: 'get-storage', tabId: state.tabId, storageType: 'localStorage' });
   } else if (section === 'sessionStorage') {
     sendMessage({ type: 'get-storage', tabId: state.tabId, storageType: 'sessionStorage' });
+  } else if (section === 'indexedDB') {
+    sendMessage({ type: 'get-indexeddb', tabId: state.tabId });
+  } else if (section === 'cacheStorage') {
+    sendMessage({ type: 'get-caches', tabId: state.tabId });
+  } else if (section === 'serviceWorkers') {
+    sendMessage({ type: 'get-service-workers', tabId: state.tabId });
+  } else if (section === 'manifest') {
+    sendMessage({ type: 'get-manifest', tabId: state.tabId });
   }
 }
 
@@ -71,6 +81,26 @@ export function handleCookiesData(cookies: any[]): void {
 export function handleStorageData(storageType: string, data: any[]): void {
   if (storageType === 'localStorage') state.application.localStorage = data || [];
   else if (storageType === 'sessionStorage') state.application.sessionStorage = data || [];
+  renderApplicationData();
+}
+
+export function handleIndexedDBData(data: IndexedDBDatabase[]): void {
+  state.application.indexedDB = data || [];
+  renderApplicationData();
+}
+
+export function handleCacheData(data: CacheStorageData[]): void {
+  state.application.caches = data || [];
+  renderApplicationData();
+}
+
+export function handleServiceWorkersData(data: ServiceWorkerData[]): void {
+  state.application.serviceWorkers = data || [];
+  renderApplicationData();
+}
+
+export function handleManifestData(data: WebManifestData | null): void {
+  state.application.manifest = data;
   renderApplicationData();
 }
 
@@ -87,6 +117,10 @@ function renderApplicationData(): void {
   if (section === 'cookies') renderCookiesTable(state.application.cookies, filter);
   else if (section === 'localStorage') renderStorageTable(state.application.localStorage, filter, 'localStorage');
   else if (section === 'sessionStorage') renderStorageTable(state.application.sessionStorage, filter, 'sessionStorage');
+  else if (section === 'indexedDB') renderIndexedDBTable(state.application.indexedDB, filter);
+  else if (section === 'cacheStorage') renderCacheStorageTable(state.application.caches, filter);
+  else if (section === 'serviceWorkers') renderServiceWorkersTable(state.application.serviceWorkers);
+  else if (section === 'manifest') renderManifestView(state.application.manifest);
 }
 
 function renderCookiesTable(cookies: any[], filter: string): void {
@@ -147,3 +181,106 @@ function renderStorageTable(items: any[], filter: string, storageType: string): 
   html += '</tbody></table>';
   appDataContainer.innerHTML = html;
 }
+
+function renderIndexedDBTable(dbs: IndexedDBDatabase[], filter: string): void {
+  if (!dbs || dbs.length === 0) {
+    appDataContainer.innerHTML = '<div class="sources-placeholder">No IndexedDB databases found</div>';
+    return;
+  }
+  const filtered = dbs.filter((db) => !filter || db.name.toLowerCase().includes(filter));
+  let html = '<table class="app-table"><thead><tr><th>Database</th><th>Version</th><th>Object Stores</th></tr></thead><tbody>';
+  filtered.forEach((db) => {
+    html += '<tr>';
+    html += '<td class="cell-name">' + escapeHtml(db.name) + '</td>';
+    html += '<td>' + escapeHtml(String(db.version)) + '</td>';
+    html += '<td>' + (db.stores.length > 0 ? db.stores.map((s) => '<code>' + escapeHtml(s) + '</code>').join(', ') : '<em>none</em>') + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  appDataContainer.innerHTML = html;
+}
+
+function renderCacheStorageTable(caches: CacheStorageData[], filter: string): void {
+  if (!caches || caches.length === 0) {
+    appDataContainer.innerHTML = '<div class="sources-placeholder">No Cache Storage found</div>';
+    return;
+  }
+  const filtered = caches.filter((c) => !filter || c.name.toLowerCase().includes(filter));
+  let html = '';
+  filtered.forEach((cache) => {
+    html += '<div class="app-cache-group">';
+    html += '<div class="app-cache-name">' + escapeHtml(cache.name) + ' <span class="app-badge">' + cache.size + ' entries</span></div>';
+    if (cache.entries.length > 0) {
+      html += '<table class="app-table"><thead><tr><th>Method</th><th>URL</th></tr></thead><tbody>';
+      cache.entries.forEach((e) => {
+        html += '<tr><td>' + escapeHtml(e.method) + '</td><td class="cell-value">' + escapeHtml(e.url) + '</td></tr>';
+      });
+      if (cache.size > cache.entries.length) {
+        html += '<tr><td colspan="2" style="text-align:center;opacity:.6">… and ' + (cache.size - cache.entries.length) + ' more</td></tr>';
+      }
+      html += '</tbody></table>';
+    }
+    html += '</div>';
+  });
+  appDataContainer.innerHTML = html;
+}
+
+function renderServiceWorkersTable(workers: ServiceWorkerData[]): void {
+  if (!workers || workers.length === 0) {
+    appDataContainer.innerHTML = '<div class="sources-placeholder">No Service Workers registered</div>';
+    return;
+  }
+  let html = '<table class="app-table"><thead><tr><th>Scope</th><th>Script URL</th><th>State</th><th>Update Via Cache</th></tr></thead><tbody>';
+  workers.forEach((w) => {
+    const stateClass = w.state === 'activated' ? 'color:var(--success,#22c55e)' : w.state === 'installing' ? 'color:var(--warn,#f59e0b)' : '';
+    html += '<tr>';
+    html += '<td class="cell-name">' + escapeHtml(w.scope) + '</td>';
+    html += '<td class="cell-value">' + escapeHtml(w.scriptURL) + '</td>';
+    html += '<td><span style="' + stateClass + '">' + escapeHtml(w.state) + '</span></td>';
+    html += '<td>' + escapeHtml(w.updateViaCache || '') + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  appDataContainer.innerHTML = html;
+}
+
+function renderManifestView(manifest: WebManifestData | null): void {
+  if (!manifest) {
+    appDataContainer.innerHTML = '<div class="sources-placeholder">No Web App Manifest found (&lt;link rel="manifest"&gt; missing)</div>';
+    return;
+  }
+  if (manifest.error) {
+    appDataContainer.innerHTML = '<div class="sources-placeholder">Manifest URL: <code>' + escapeHtml(manifest.url) + '</code><br>Error: ' + escapeHtml(String(manifest.error)) + '</div>';
+    return;
+  }
+
+  const fields: [string, string][] = [
+    ['URL', manifest.url],
+    ['name', String(manifest.name ?? '')],
+    ['short_name', String(manifest.short_name ?? '')],
+    ['description', String(manifest.description ?? '')],
+    ['start_url', String(manifest.start_url ?? '')],
+    ['display', String(manifest.display ?? '')],
+    ['theme_color', String(manifest.theme_color ?? '')],
+    ['background_color', String(manifest.background_color ?? '')],
+  ];
+
+  let html = '<table class="app-table"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>';
+  fields.forEach(([key, val]) => {
+    if (val) {
+      html += '<tr><td class="cell-name">' + escapeHtml(key) + '</td><td class="cell-value">' + escapeHtml(val) + '</td></tr>';
+    }
+  });
+
+  if (Array.isArray(manifest.icons) && manifest.icons.length > 0) {
+    html += '<tr><td class="cell-name">icons</td><td>';
+    manifest.icons.forEach((icon) => {
+      html += '<div>' + escapeHtml(icon.sizes) + ' — ' + escapeHtml(icon.type || '') + ' <a href="' + escapeHtml(icon.src) + '" target="_blank" rel="noopener" style="color:var(--brand)">' + escapeHtml(icon.src) + '</a></div>';
+    });
+    html += '</td></tr>';
+  }
+
+  html += '</tbody></table>';
+  appDataContainer.innerHTML = html;
+}
+

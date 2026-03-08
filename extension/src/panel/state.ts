@@ -7,6 +7,10 @@ import type {
   EventListenerInfo,
   NetworkRequestData,
   SourceFile,
+  IndexedDBDatabase,
+  CacheStorageData,
+  ServiceWorkerData,
+  WebManifestData,
 } from '@/shared/types';
 
 export interface PanelState {
@@ -25,6 +29,7 @@ export interface PanelState {
     commandHistory: string[];
     historyIndex: number;
     groupDepth: number;
+    showTimestamps: boolean;
   };
   network: {
     entries: NetworkRequestData[];
@@ -51,6 +56,10 @@ export interface PanelState {
     cookies: chrome.cookies.Cookie[];
     localStorage: StorageItem[];
     sessionStorage: StorageItem[];
+    indexedDB: IndexedDBDatabase[];
+    caches: CacheStorageData[];
+    serviceWorkers: ServiceWorkerData[];
+    manifest: WebManifestData | null;
     filter: string;
   };
 }
@@ -93,6 +102,7 @@ export function createInitialState(): PanelState {
       commandHistory: [],
       historyIndex: -1,
       groupDepth: 0,
+      showTimestamps: false,
     },
     network: {
       entries: [],
@@ -119,6 +129,10 @@ export function createInitialState(): PanelState {
       cookies: [],
       localStorage: [],
       sessionStorage: [],
+      indexedDB: [],
+      caches: [],
+      serviceWorkers: [],
+      manifest: null,
       filter: '',
     },
   };

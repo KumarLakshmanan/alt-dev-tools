@@ -51,7 +51,7 @@ export function LicensePanel() {
             spellcheck={false}
             autocomplete="off"
           />
-          <button id="license-activate-btn" class="license-btn license-btn-primary">
+          <button id="license-activate-btn" class="license-btn license-btn-primary" title="Activate your license key to unlock Pro features">
             Activate
           </button>
         </div>
@@ -79,7 +79,7 @@ export function LicensePanel() {
           <span class="license-activated-key-label">License key:</span>
           <code id="license-key-display" class="license-key-display">—</code>
         </div>
-        <button id="license-deactivate-btn" class="license-btn license-btn-danger">
+        <button id="license-deactivate-btn" class="license-btn license-btn-danger" title="Remove this license key from the extension">
           Remove License
         </button>
       </div>

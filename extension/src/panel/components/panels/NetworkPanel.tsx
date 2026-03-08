@@ -36,15 +36,15 @@ export function NetworkPanel() {
         </div>
         <div class="toolbar-right">
           <div class="type-filters">
-            <button class="type-filter-btn active" data-type="all">All</button>
-            <button class="type-filter-btn" data-type="fetch">Fetch/XHR</button>
-            <button class="type-filter-btn" data-type="document">Doc</button>
-            <button class="type-filter-btn" data-type="stylesheet">CSS</button>
-            <button class="type-filter-btn" data-type="script">JS</button>
-            <button class="type-filter-btn" data-type="image">Img</button>
-            <button class="type-filter-btn" data-type="font">Font</button>
-            <button class="type-filter-btn" data-type="websocket">WS</button>
-            <button class="type-filter-btn" data-type="other">Other</button>
+            <button class="type-filter-btn active" data-type="all" title="Show all request types">All</button>
+            <button class="type-filter-btn" data-type="fetch" title="Show Fetch and XHR requests">Fetch/XHR</button>
+            <button class="type-filter-btn" data-type="document" title="Show document requests">Doc</button>
+            <button class="type-filter-btn" data-type="stylesheet" title="Show CSS stylesheet requests">CSS</button>
+            <button class="type-filter-btn" data-type="script" title="Show JavaScript requests">JS</button>
+            <button class="type-filter-btn" data-type="image" title="Show image requests">Img</button>
+            <button class="type-filter-btn" data-type="font" title="Show font requests">Font</button>
+            <button class="type-filter-btn" data-type="websocket" title="Show WebSocket connections">WS</button>
+            <button class="type-filter-btn" data-type="other" title="Show other request types">Other</button>
           </div>
         </div>
       </div>
@@ -79,13 +79,13 @@ export function NetworkPanel() {
       {/* ── Request detail pane ── */}
       <div id="network-detail" class="network-detail hidden">
         <div class="detail-header">
-          <button id="network-detail-close" class="toolbar-btn">&times;</button>
+          <button id="network-detail-close" class="toolbar-btn" title="Close details">&times;</button>
           <div class="detail-tabs">
-            <button class="detail-tab active" data-detail="headers">Headers</button>
-            <button class="detail-tab" data-detail="payload">Payload</button>
-            <button class="detail-tab" data-detail="preview">Preview</button>
-            <button class="detail-tab" data-detail="response">Response</button>
-            <button class="detail-tab" data-detail="timing">Timing</button>
+            <button class="detail-tab active" data-detail="headers" title="View request/response headers">Headers</button>
+            <button class="detail-tab" data-detail="payload" title="View request payload">Payload</button>
+            <button class="detail-tab" data-detail="preview" title="Preview response body">Preview</button>
+            <button class="detail-tab" data-detail="response" title="View raw response">Response</button>
+            <button class="detail-tab" data-detail="timing" title="View request timing">Timing</button>
           </div>
           <button
             id="network-copy-curl"
@@ -111,7 +111,7 @@ export function NetworkPanel() {
       <div id="network-blocking-panel" class="network-blocking-panel hidden">
         <div class="blocking-header">
           <span>Request Blocking</span>
-          <button id="network-blocking-close" class="toolbar-btn">&times;</button>
+          <button id="network-blocking-close" class="toolbar-btn" title="Close request blocking">&times;</button>
         </div>
         <div class="blocking-content">
           <div class="blocking-input-row">
@@ -121,7 +121,7 @@ export function NetworkPanel() {
               class="filter-input"
               placeholder="URL pattern (e.g. *.js, api.example.com/*)"
             />
-            <button id="blocking-add-btn" class="action-btn">Add</button>
+            <button id="blocking-add-btn" class="action-btn" title="Add URL pattern to block list">Add</button>
           </div>
           <div id="blocking-patterns-list" class="blocking-patterns-list" />
         </div>
@@ -131,7 +131,7 @@ export function NetworkPanel() {
       <div id="network-ws-panel" class="network-ws-panel hidden">
         <div class="ws-header">
           <span>WebSocket Frames</span>
-          <button id="network-ws-close" class="toolbar-btn">&times;</button>
+          <button id="network-ws-close" class="toolbar-btn" title="Close WebSocket frames">&times;</button>
         </div>
         <div id="ws-frames-list" class="ws-frames-list" />
       </div>

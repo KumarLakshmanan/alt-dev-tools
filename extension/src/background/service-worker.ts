@@ -7,7 +7,7 @@
 
 import { PORT_NAME } from '@/shared/constants';
 import { safeSendToTab } from './messaging';
-import { handleCookiesMessage, handleStorageMessage } from './handlers';
+import { handleCookiesMessage, handleStorageMessage, handleIndexedDBMessage, handleCacheStorageMessage, handleServiceWorkersMessage, handleManifestMessage } from './handlers';
 import type { PanelToBackgroundMessage } from '@/shared/types';
 
 // Open side panel when extension icon is clicked
@@ -265,6 +265,22 @@ function routeMessage(message: PanelToBackgroundMessage, tabId: number): void {
 
     case 'get-storage':
       handleStorageMessage(message, tabId, panelPort);
+      break;
+
+    case 'get-indexeddb':
+      handleIndexedDBMessage(tabId, panelPort);
+      break;
+
+    case 'get-caches':
+      handleCacheStorageMessage(tabId, panelPort);
+      break;
+
+    case 'get-service-workers':
+      handleServiceWorkersMessage(tabId, panelPort);
+      break;
+
+    case 'get-manifest':
+      handleManifestMessage(tabId, panelPort);
       break;
 
     case 'set-blocked-urls':

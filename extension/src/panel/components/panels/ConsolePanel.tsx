@@ -33,6 +33,10 @@ export function ConsolePanel() {
               <input type="checkbox" data-level="error" checked />
               <span class="level-badge error">Errors</span>
             </label>
+            <label class="level-filter">
+              <input type="checkbox" id="console-timestamps" />
+              <span class="level-badge">Timestamps</span>
+            </label>
           </div>
         </div>
       </div>

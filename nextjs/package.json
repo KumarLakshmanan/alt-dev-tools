@@ -15,11 +15,13 @@
     "dodopayments": "^2.20.0",
     "lucide-react": "^0.575.0",
     "next": "^14.2.0",
+    "nodemailer": "^6.10.1",
     "react": "^18.3.0",
     "react-dom": "^18.3.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.0",

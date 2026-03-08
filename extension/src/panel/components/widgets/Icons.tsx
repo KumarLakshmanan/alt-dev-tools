@@ -279,3 +279,53 @@ export function IconLock({ size = 12 }: { size?: number }) {
     </SvgIcon>
   );
 }
+
+export function IconDatabase({ size = 14 }: { size?: number }) {
+  return (
+    <SvgIcon size={size}>
+      <ellipse cx={12} cy={5} rx={9} ry={3} />
+      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+    </SvgIcon>
+  );
+}
+
+export function IconCache({ size = 14 }: { size?: number }) {
+  return (
+    <SvgIcon size={size}>
+      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+    </SvgIcon>
+  );
+}
+
+export function IconServiceWorker({ size = 14 }: { size?: number }) {
+  return (
+    <SvgIcon size={size}>
+      <circle cx={12} cy={12} r={3} />
+      <path d="M19.07 4.93a10 10 0 0 1 1.41 14.14" />
+      <path d="M4.93 4.93A10 10 0 0 0 3.52 19.07" />
+      <path d="M15.54 8.46a5 5 0 0 1 1.41 7.07" />
+      <path d="M8.46 8.46a5 5 0 0 0-1.41 7.07" />
+    </SvgIcon>
+  );
+}
+
+export function IconManifest({ size = 14 }: { size?: number }) {
+  return (
+    <SvgIcon size={size}>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1={16} y1={13} x2={8} y2={13} />
+      <line x1={16} y1={17} x2={8} y2={17} />
+      <polyline points="10 9 9 9 8 9" />
+    </SvgIcon>
+  );
+}
+
+export function IconSecurity({ size = 12 }: { size?: number }) {
+  return (
+    <SvgIcon size={size}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </SvgIcon>
+  );
+}

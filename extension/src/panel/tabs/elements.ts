@@ -175,10 +175,15 @@ export function handleDomTree(tree: any): void {
     const fragment = document.createDocumentFragment();
     renderDomNode(tree, fragment, 0);
     elementsTree.appendChild(fragment);
-    // Only scroll if an explicit element selection triggered this load
+    // Scroll to selected element if flagged
     if (pendingScrollOnLoad && state.elements.selectedSelector) {
       pendingScrollOnLoad = false;
       scrollToSelectedDomNode(state.elements.selectedSelector);
+    } else if ((elementsTree as any)._restoreScrollTop !== undefined) {
+      // Restore saved scroll position after mutation-triggered reload
+      const saved = (elementsTree as any)._restoreScrollTop as number;
+      delete (elementsTree as any)._restoreScrollTop;
+      elementsTree.scrollTop = saved;
     }
   } catch (err: any) {
     elementsTree.innerHTML = '<div class="sources-placeholder">Error rendering DOM: ' + escapeHtml(err.message) + '</div>';
@@ -392,6 +397,13 @@ export function handleDomMutation(mutations: any[]): void {
     mutationDebounceTimer = setTimeout(() => {
       mutationDebounceTimer = null;
       if (!isEditingDom) {
+        // Preserve scroll position: scroll to selected element, or restore scrollTop
+        if (state.elements.selectedSelector) {
+          pendingScrollOnLoad = true;
+        } else {
+          const savedScrollTop = elementsTree.scrollTop;
+          (elementsTree as any)._restoreScrollTop = savedScrollTop;
+        }
         loadDomTree();
         if (badge) badge.textContent = '';
       }

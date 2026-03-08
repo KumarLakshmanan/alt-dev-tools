@@ -164,6 +164,43 @@ export interface DomMutationSummary {
   attr?: string;
 }
 
+/** IndexedDB object store info */
+export interface IndexedDBDatabase {
+  name: string;
+  version: number;
+  stores: string[];
+}
+
+/** CacheStorage entry */
+export interface CacheStorageData {
+  name: string;
+  size: number;
+  entries: { url: string; method: string }[];
+}
+
+/** Service worker registration info */
+export interface ServiceWorkerData {
+  scope: string;
+  scriptURL: string;
+  state: string;
+  updateViaCache: string;
+}
+
+/** Web App Manifest data */
+export interface WebManifestData {
+  url: string;
+  name?: string;
+  short_name?: string;
+  description?: string;
+  start_url?: string;
+  display?: string;
+  theme_color?: string;
+  background_color?: string;
+  icons?: { src: string; sizes: string; type: string }[];
+  error?: string;
+  [key: string]: unknown;
+}
+
 /** Eval request sent to page context */
 export interface EvalRequest {
   __devtools_eval_request__: true;
@@ -218,6 +255,10 @@ export type PanelToBackgroundMessage =
   | { type: 'get-cookies'; tabId: number }
   | { type: 'delete-cookie'; tabId: number; url: string; name: string }
   | { type: 'get-storage'; tabId: number; storageType: string }
+  | { type: 'get-indexeddb'; tabId: number }
+  | { type: 'get-caches'; tabId: number }
+  | { type: 'get-service-workers'; tabId: number }
+  | { type: 'get-manifest'; tabId: number }
   | { type: 'set-blocked-urls'; tabId: number; urls: string[] }
   | { type: 'set-selected-element'; tabId: number; selector: string }
   | { type: 'apply-device-emulation'; tabId: number; width: number; height: number; deviceScaleFactor: number; mobile: boolean }
@@ -244,6 +285,10 @@ export type BackgroundToPanelMessage =
   | { type: 'cookies-data'; data: chrome.cookies.Cookie[] }
   | { type: 'cookie-deleted'; name: string }
   | { type: 'storage-data'; storageType: string; data: { key: string; value: string }[] }
+  | { type: 'indexeddb-data'; data: IndexedDBDatabase[] }
+  | { type: 'cache-data'; data: CacheStorageData[] }
+  | { type: 'service-workers-data'; data: ServiceWorkerData[] }
+  | { type: 'manifest-data'; data: WebManifestData | null }
   | { type: 'force-state-result'; data: boolean }
   | WebSocketMessage
   | { type: 'inspect-element-selected'; selector: string; tagName: string; id: string; className: string }

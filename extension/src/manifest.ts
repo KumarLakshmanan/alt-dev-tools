@@ -5,7 +5,7 @@ export default defineManifest({
   name: 'ALT-DEV TOOLS',
   description:
     'A powerful sidebar DevTools alternative — Elements, Console, Network, Sources & Application panels right in your browser sidebar',
-  version: '1.0.1',
+  version: '1.0.2',
   permissions: ['activeTab', 'scripting', 'sidePanel', 'tabs', 'cookies', 'debugger', 'storage'],
   host_permissions: ['<all_urls>'],
   action: {
